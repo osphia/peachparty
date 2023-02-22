@@ -1,6 +1,9 @@
 #include "StudentWorld.h"
+#include "Actor.h"
 #include "GameConstants.h"
 #include <string>
+#include <list>
+
 using namespace std;
 
 GameWorld* createStudentWorld(string assetPath)
@@ -15,17 +18,86 @@ StudentWorld::StudentWorld(string assetPath)
 {
 }
 
+//adding actors
+void StudentWorld::addActor(Actor* act) {
+    actors.push_back(act);
+}
+
+//destructor
+StudentWorld::~StudentWorld() {
+    cleanUp();
+}
+
+
 int StudentWorld::init()
 {
-//    1. Initialize the data structures used to keep track of your game’s world.
-//    2. Allocate and insert Peach and Yoshi objects into the game world. Every time a
-//    game begins, Peach and Yoshi start out initialized in their starting location as
-//    specified by the current board data file.
-//    3. Allocate and insert all of the other objects (e.g., squares, baddies, etc.) into the
-//    game world as described below.
-//    4. Start the countdown timer for the 99-second game.
-	startCountdownTimer(5);  // this placeholder causes timeout after 5 seconds
-    return GWSTATUS_CONTINUE_GAME;
+    //    1. Initialize the data structures used to keep track of your game’s world.
+    //    2. Allocate and insert Peach and Yoshi objects into the game world. Every time a
+    //    game begins, Peach and Yoshi start out initialized in their starting location as
+    //    specified by the current board data file.
+    //    3. Allocate and insert all of the other objects (e.g., squares, baddies, etc.) into the
+    //    game world as described below.
+    //    4. Start the countdown timer for the 99-second game.
+    m_stars = 0;
+    m_coins = 0;
+    m_boardNumber = getBoardNumber();
+    
+    Board bd;
+    string bdNum = "0" + to_string(m_boardNumber);
+    string board_file = assetPath() + "board" + bdNum + ".txt";
+    Board::LoadResult result = bd.loadBoard(board_file);
+    if (result == Board::load_fail_file_not_found || result == Board::load_fail_bad_format)
+        return GWSTATUS_BOARD_ERROR;
+    else if (result == Board::load_success) {
+        cerr << "Successfully loaded board\n";
+        for (int i = 0; i < 16; i ++) {
+            for (int j = 0; j < 16; j++) {
+                Board::GridEntry ge = bd.getContentsOf(i, j);
+                switch (ge) {
+                    case Board::empty:
+                        break;
+                    case Board::boo:
+                        //addActor(new Boo());
+                        break;
+                    case Board::bowser:
+                        //addActor(new Boo());
+                        break;
+                    case Board::player:
+                        //addActor(new Player());
+                        break;
+                    case Board::red_coin_square:
+                        //addActor(new RedCoinSquare());
+                        break;
+                    case Board::blue_coin_square:
+                        //addActor(new BlueCoinSquare());
+                        break;
+                    case Board::up_dir_square:
+                        //addActor(new DirectionalSquare());
+                        break;
+                    case Board::down_dir_square:
+                        //addActor(new DirectionalSquare());
+                        break;
+                    case Board::left_dir_square:
+                        //addActor(new DirectionalSquare());
+                        break;
+                    case Board::right_dir_square:
+                        //addActor(new DirectionalSquare());
+                        break;
+                    case Board::event_square:
+                        //addActor(new EventSquare());
+                        break;
+                    case Board::bank_square:
+                        //addActor(new BankSquare());
+                        break;
+                    case Board::star_square:
+                        //addActor(new StarSquare());
+                        break;
+                }
+            }
+        }
+    }
+        startCountdownTimer(5);  // this placeholder causes timeout after 5 seconds
+        return GWSTATUS_CONTINUE_GAME;
 }
 
 int StudentWorld::move()

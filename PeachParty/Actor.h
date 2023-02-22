@@ -16,14 +16,33 @@ public:
     }
 private:
     StudentWorld* m_game;
+    int m_imageID;
+    int m_x;
+    int m_y;
 };
 
 //players
 class Player : public Actor {
 public:
-    
+    Player(int imageID, int startX, int startY, int dir = right, int depth = 0, double size = 1.0);
+    virtual void doSomething();
+private:
+    int playerNum;
+};
+
+class Peach : public Player {
+public:
+    Peach(int startX, int startY) : Player(IID_PEACH, startX, startY) {};
+    virtual void doSomething();
 private:
     
+};
+
+class Yoshi : public Player {
+public:
+    Yoshi(int startX, int startY) : Player(IID_YOSHI, startX, startY) {};
+    virtual void doSomething();
+private:
 };
 
 //baddies
@@ -57,6 +76,20 @@ private:
 };
 
 class CoinSquare : public Square {
+public:
+    
+private:
+    
+};
+
+class BlueCoinSquare : public CoinSquare {
+public:
+    
+private:
+    
+};
+
+class RedCoinSquare : public CoinSquare {
 public:
     
 private:
