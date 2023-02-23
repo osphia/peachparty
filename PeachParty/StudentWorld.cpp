@@ -59,18 +59,17 @@ int StudentWorld::init()
                         //addActor(new Boo());
                         break;
                     case Board::bowser:
-                        //addActor(new Boo());
+                        //addActor(new Bowser());
                         break;
                     case Board::player:
                         peach = new Peach(this, i, j);
 //                        yoshi = new Yoshi(this, i,j);
-//                        addActor(new BlueCoinSquare(i,j));
                         break;
                     case Board::red_coin_square:
                         //addActor(new RedCoinSquare());
                         break;
                     case Board::blue_coin_square:
-                        //addActor(new BlueCoinSquare());
+                        addActor(new BlueCoinSquare(this, i, j));
                         break;
                     case Board::up_dir_square:
                         //addActor(new DirectionalSquare());
@@ -134,4 +133,19 @@ int StudentWorld::move()
 
 void StudentWorld::cleanUp()
 {
+    list<Actor*>::iterator it;
+    it = actors.begin();
+    
+    while (it != actors.end()) {
+        delete *it;
+        it = actors.erase(it);
+    }
+    
+    delete peach;
+    peach = nullptr;
+    delete yoshi;
+    yoshi = nullptr;
 }
+
+
+//helper functions

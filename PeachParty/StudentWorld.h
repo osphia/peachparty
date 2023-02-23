@@ -19,6 +19,7 @@ public:
     virtual int init();
     virtual int move();
     virtual void cleanUp();
+    bool validPos(int x, int y);
 
 private:
     int m_lives;

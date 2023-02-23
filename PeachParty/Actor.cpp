@@ -9,6 +9,10 @@ void Peach::doSomething() {
     return;
 }
 
+void BlueCoinSquare::doSomething() {
+    std::cerr << "test";
+    return;
+}
 //void Yoshi::doSomething() {
 //    std::cerr << "what";
 //    return;

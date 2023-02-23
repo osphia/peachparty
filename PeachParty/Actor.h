@@ -72,26 +72,27 @@ private:
 //};
 //
 ////square
-//class Square : public Actor {
-//public:
-//
-//private:
-//
-//};
-//
-//class CoinSquare : public Square {
-//public:
-//
-//private:
-//
-//};
-//
-//class BlueCoinSquare : public CoinSquare {
-//public:
-//
-//private:
-//
-//};
+class Square : public Actor {
+public:
+    Square(StudentWorld* world, int imageID, int startX, int startY, int spriteDir): Actor(world, imageID, startX, startY, 1){};
+private:
+    bool isAlive;
+};
+
+class CoinSquare : public Square {
+public:
+    CoinSquare(StudentWorld* world, int imageID, int startX, int startY) : Square(world, imageID, startX, startY, 0){};
+private:
+
+};
+
+class BlueCoinSquare : public CoinSquare {
+public:
+    BlueCoinSquare(StudentWorld* world, int startX, int startY) : CoinSquare(world, IID_BLUE_COIN_SQUARE, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY){};
+    virtual void doSomething();
+private:
+    
+};
 //
 //class RedCoinSquare : public CoinSquare {
 //public:
