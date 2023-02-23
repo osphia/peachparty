@@ -11,9 +11,11 @@ public:
     Actor(StudentWorld* world, int imageID, int startX, int startY, int depth) : GraphObject(imageID, startX, startY, right, 0), m_game(world) {};
     //virtual ~Actor();
     virtual void doSomething() = 0;
-    StudentWorld* getWorld() {return m_game;};
+    StudentWorld* getWorld() {return m_game;}
+    virtual bool isAlive() { return alive; }
 private:
     StudentWorld* m_game;
+    bool alive;
 };
 
 //players
@@ -21,22 +23,22 @@ class Player : public Actor {
 public:
     Player(StudentWorld* world, int imageID, int startX, int startY, int spriteDir): Actor(world, imageID, startX, startY, 0){};
     //virtual ~Player();
-    //virtual void doSomething() {}
+    virtual void doSomething();
 private:
+    bool goTo(int m_x, int m_y);
     int numCoins;
     int numStars;
     int playerNum;
-    bool state; //waiting = false, walking = true
+    bool state = true; //waiting = true, walking = false
     int ticks_to_move;
     int spriteDir;
-    
 };
 
 class Peach : public Player {
 public:
     Peach(StudentWorld* world, int startX, int startY) : Player(world, IID_PEACH, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, 0) {};
     //virtual ~Peach();
-    virtual void doSomething();
+    //virtual void doSomething();
 private:
     int numPlayer = 1;
 };
@@ -93,6 +95,8 @@ public:
 private:
     
 };
+
+
 //
 //class RedCoinSquare : public CoinSquare {
 //public:
@@ -142,4 +146,6 @@ private:
 //private:
 //
 //};
+
+
 #endif // ACTOR_H_

@@ -6,15 +6,13 @@
 
 using namespace std;
 
-GameWorld* createStudentWorld(string assetPath)
-{
+GameWorld* createStudentWorld(string assetPath) {
 	return new StudentWorld(assetPath);
 }
 
 // Students:  Add code to this file, StudentWorld.h, Actor.h, and Actor.cpp
 
-StudentWorld::StudentWorld(string assetPath) : GameWorld(assetPath)
-{
+StudentWorld::StudentWorld(string assetPath) : GameWorld(assetPath) {
 }
 
 //adding actors
@@ -63,6 +61,7 @@ int StudentWorld::init()
                         break;
                     case Board::player:
                         peach = new Peach(this, i, j);
+                        addActor(new BlueCoinSquare(this, i, j));
 //                        yoshi = new Yoshi(this, i,j);
                         break;
                     case Board::red_coin_square:
@@ -119,14 +118,27 @@ int StudentWorld::move()
 //    (e.g., each player's stats).
 //    5. If the game is not over, then the function must return GWSTATUS_CONTINUE_GAME.
     // PSEUDOCODE ON PG 19
+    for (Actor* t : actors) {
+        if (t->isAlive()) {
+            t->doSomething();
+        }
+    }
     
+    // Remove newly-inactive actors after each tick
+    //remove inactive/dead game objects
+    // Update the Game Status Line
+    //update display text // update the coins/stars stats text at screen top
+
     // This code is here merely to allow the game to build, run, and terminate after you hit ESC.
     // Notice that the return value GWSTATUS_NOT_IMPLEMENTED will cause our framework to end the game.
 
     setGameStatText("Game will end in a few seconds");
     
-    if (timeRemaining() <= 0)
-		return GWSTATUS_NOT_IMPLEMENTED;
+    if (timeRemaining() <= 0) {
+        //play end of game sound
+        //check who wins and return status
+        return GWSTATUS_NOT_IMPLEMENTED;
+    }
     
 	return GWSTATUS_CONTINUE_GAME;
 }
@@ -143,9 +155,16 @@ void StudentWorld::cleanUp()
     
     delete peach;
     peach = nullptr;
-    delete yoshi;
-    yoshi = nullptr;
+//    delete yoshi;
+//    yoshi = nullptr;
 }
 
 
 //helper functions
+bool StudentWorld::validPos(int x, int y) { //change later
+    for (auto a : actors)
+        if (x + SPRITE_WIDTH - 1 > a->getX() && x < a->getX() + SPRITE_WIDTH - 1)
+            if (y + SPRITE_HEIGHT - 1 > a->getY() && y < a->getY() + SPRITE_HEIGHT - 1)
+                return false;
+        return true;
+}
