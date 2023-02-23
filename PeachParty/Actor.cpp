@@ -5,7 +5,7 @@
 // Students:  Add code to this file, Actor.h, StudentWorld.h, and StudentWorld.cpp
 
 void Peach::doSomething() {
-    std::cerr << "what";
+    std::cerr << "test";
     return;
 }
 
