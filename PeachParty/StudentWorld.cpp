@@ -95,7 +95,7 @@ int StudentWorld::init()
             }
         }
     }
-        startCountdownTimer(5);  // this placeholder causes timeout after 5 seconds
+        startCountdownTimer(99);  // this placeholder causes timeout after 5 seconds
         return GWSTATUS_CONTINUE_GAME;
 }
 
@@ -118,6 +118,8 @@ int StudentWorld::move()
 //    (e.g., each player's stats).
 //    5. If the game is not over, then the function must return GWSTATUS_CONTINUE_GAME.
     // PSEUDOCODE ON PG 19
+    if (peach->isAlive())
+        peach->doSomething();
     for (Actor* t : actors) {
         if (t->isAlive()) {
             t->doSomething();
@@ -161,10 +163,29 @@ void StudentWorld::cleanUp()
 
 
 //helper functions
+
 bool StudentWorld::validPos(int x, int y) { //change later
-    for (auto a : actors)
-        if (x + SPRITE_WIDTH - 1 > a->getX() && x < a->getX() + SPRITE_WIDTH - 1)
-            if (y + SPRITE_HEIGHT - 1 > a->getY() && y < a->getY() + SPRITE_HEIGHT - 1)
-                return false;
-        return true;
+    m_boardNumber = getBoardNumber();
+
+    Board bd;
+    string bdNum = "0" + to_string(m_boardNumber);
+    string board_file = assetPath() + "board" + bdNum + ".txt";
+    Board::LoadResult result = bd.loadBoard(board_file);
+    if (result == Board::load_fail_file_not_found || result == Board::load_fail_bad_format)
+        return GWSTATUS_BOARD_ERROR;
+    else if (result == Board::load_success) {
+        cerr << "Successfully loaded board\n";
+
+    }
+    Board::GridEntry ge = bd.getContentsOf(x/SPRITE_WIDTH, y/SPRITE_HEIGHT);
+    //cerr << x << " " << y << endl;
+    if (ge == Board::empty) {
+        return false;
+    }
+    return true;
+//    for (auto a : actors)
+//        if (x + SPRITE_WIDTH - 1 > peach->getX() && x < peach->getX() + SPRITE_WIDTH - 1)
+//            if (y + SPRITE_HEIGHT - 1 > peach->getY() && y < peach->getY() + SPRITE_HEIGHT - 1)
+//                return false;
+//        return true;
 }

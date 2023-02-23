@@ -6,72 +6,85 @@
 
 void Player::doSomething() {
     if (state) { //still state
-        int action = getWorld()->getAction(1);
+        int action = getWorld()->getAction(1); //only for peach, change later
         if (action != ACTION_NONE) { //change later
             if (action == ACTION_ROLL) {
                 int die_roll = randInt(1, 10);
                 ticks_to_move = die_roll*8;
                 state = false;
             }
-        }
+    }
         else {
             return;
         }
     } else { //walking state
         int dir = getDirection();
+        int newX = 0;
+        int newY = 0;
         switch(dir) {
-            case (0): //right
-                if (!getWorld()->validPos(getX()+2, getY())) { //what if neither are valid??
-                    if (getWorld()->validPos(getX(), getY() + 2))
-                        setDirection(90);
-                    else
-                        setDirection(270);
+            case (right):
+                getPositionInThisDirection(right, 2, newX, newY);
+                if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
+                    getPositionInThisDirection(up, 2, newX, newY);
+                    if (getWorld()->validPos(newX, newY)){
+                        setDirection(up);
+                    }
+                    getPositionInThisDirection(down, 2, newX, newY);
+                    if (getWorld()->validPos(newX, newY)) //always returns false
+                        setDirection(down);
                 }
                 break;
-            case(90): //up
-                if (!getWorld()->validPos(getX(), getY()+2)) { //what if neither are valid??
-                    if (getWorld()->validPos(getX()+2, getY()))
-                        setDirection(0);
+            case(up):
+                getPositionInThisDirection(up, 2, newX, newY);
+                if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
+                    getPositionInThisDirection(right, 2, newX, newY);
+                    if (getWorld()->validPos(newX, newY))
+                        setDirection(right);
                     else
-                        setDirection(180);
+                        setDirection(left);
                 }
                 break;
-            case(180): //left
-                if (!getWorld()->validPos(getX()-2, getY())) { //what if neither are valid??
-                    if (getWorld()->validPos(getX(), getY() + 2))
-                        setDirection(90);
+            case(left):
+                getPositionInThisDirection(left, 2, newX, newY);
+                if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
+                    getPositionInThisDirection(up, 2, newX, newY);
+                    if (getWorld()->validPos(newX, newY))
+                        setDirection(up);
                     else
-                        setDirection(270);
+                        setDirection(down);
                 }
                 break;
-            case(270): //down
-                if (!getWorld()->validPos(getX(), getY()-2)) { //what if neither are valid??
-                    if (getWorld()->validPos(getX()+2, getY()))
-                        setDirection(0);
+            case(down):
+                getPositionInThisDirection(down, 2, newX, newY);
+                if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
+                    getPositionInThisDirection(right, 2, newX, newY);
+                    if (getWorld()->validPos(newX, newY))
+                        setDirection(right);
                     else
-                        setDirection(180);
+                        setDirection(left);
                 }
                 break;
             default:
                 break; //non valid direction
         }
-        if (dir == 180) //sprite facing direction
-            spriteDir = 180;
+        
+        if (dir == left) //sprite facing direction
+            spriteDir = left;
         else
-            spriteDir = 0;
+            spriteDir = right;
         
         switch (dir) { //walk two steps
-            case (0):
-                moveTo(getX()+2, getY());
+            case (right):
+                goTo(getX()+2, getY()); //goto or moveto???
                 break;
-            case (90):
-                moveTo(getX(), getY()+2);
+            case (up):
+                goTo(getX(), getY()+2);
                 break;
-            case (180):
-                moveTo(getX()-2, getY());
+            case (left):
+                goTo(getX()-2, getY());
                 break;
-            case (270):
-                moveTo(getX(), getY()-2);
+            case (down):
+                goTo(getX(), getY()-2);
                 break;
             default:
                 break;
@@ -91,7 +104,6 @@ bool Player::goTo(int m_x, int m_y) { //change later
 }
 
 void BlueCoinSquare::doSomething() {
-    std::cerr << "test";
     return;
 }
 //void Yoshi::doSomething() {

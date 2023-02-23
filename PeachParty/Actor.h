@@ -11,11 +11,11 @@ public:
     Actor(StudentWorld* world, int imageID, int startX, int startY, int depth) : GraphObject(imageID, startX, startY, right, 0), m_game(world) {};
     //virtual ~Actor();
     virtual void doSomething() = 0;
-    StudentWorld* getWorld() {return m_game;}
+        StudentWorld* getWorld() {return m_game;}
     virtual bool isAlive() { return alive; }
 private:
     StudentWorld* m_game;
-    bool alive;
+    bool alive = true;
 };
 
 //players
