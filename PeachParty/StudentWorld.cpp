@@ -13,8 +13,7 @@ GameWorld* createStudentWorld(string assetPath)
 
 // Students:  Add code to this file, StudentWorld.h, Actor.h, and Actor.cpp
 
-StudentWorld::StudentWorld(string assetPath)
-: GameWorld(assetPath)
+StudentWorld::StudentWorld(string assetPath) : GameWorld(assetPath)
 {
 }
 
@@ -63,7 +62,9 @@ int StudentWorld::init()
                         //addActor(new Boo());
                         break;
                     case Board::player:
-                        //addActor(new Player());
+                        peach = new Peach(this, i, j);
+//                        yoshi = new Yoshi(this, i,j);
+//                        addActor(new BlueCoinSquare(i,j));
                         break;
                     case Board::red_coin_square:
                         //addActor(new RedCoinSquare());
