@@ -24,6 +24,8 @@ public:
     Player(StudentWorld* world, int imageID, int startX, int startY, int spriteDir): Actor(world, imageID, startX, startY, 0){};
     //virtual ~Player();
     virtual void doSomething();
+    int getWalkDirection() {return walkDir;}
+    void setWalkDirection(int d) {walkDir = d;}
 private:
     bool goTo(int m_x, int m_y);
     int numCoins;
@@ -31,7 +33,7 @@ private:
     int playerNum;
     bool state = true; //waiting = true, walking = false
     int ticks_to_move;
-    int spriteDir;
+    int walkDir = 0;
 };
 
 class Peach : public Player {
@@ -93,7 +95,7 @@ public:
     BlueCoinSquare(StudentWorld* world, int startX, int startY) : CoinSquare(world, IID_BLUE_COIN_SQUARE, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY){};
     virtual void doSomething();
 private:
-    
+    bool living;
 };
 
 

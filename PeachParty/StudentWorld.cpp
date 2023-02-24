@@ -177,15 +177,12 @@ bool StudentWorld::validPos(int x, int y) { //change later
         cerr << "Successfully loaded board\n";
 
     }
+    
     Board::GridEntry ge = bd.getContentsOf(x/SPRITE_WIDTH, y/SPRITE_HEIGHT);
-    //cerr << x << " " << y << endl;
-    if (ge == Board::empty) {
-        return false;
+    cerr << x << " " << y << endl;
+    cerr << x/SPRITE_WIDTH << " " << y/SPRITE_HEIGHT << endl;
+    if (ge != Board::empty) {
+        return true;
     }
-    return true;
-//    for (auto a : actors)
-//        if (x + SPRITE_WIDTH - 1 > peach->getX() && x < peach->getX() + SPRITE_WIDTH - 1)
-//            if (y + SPRITE_HEIGHT - 1 > peach->getY() && y < peach->getY() + SPRITE_HEIGHT - 1)
-//                return false;
-//        return true;
+    return false;
 }

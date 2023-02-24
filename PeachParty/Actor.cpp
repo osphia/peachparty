@@ -18,73 +18,75 @@ void Player::doSomething() {
             return;
         }
     } else { //walking state
-        int dir = getDirection();
-        int newX = 0;
-        int newY = 0;
-        switch(dir) {
-            case (right):
-                getPositionInThisDirection(right, 2, newX, newY);
-                if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
-                    getPositionInThisDirection(up, 2, newX, newY);
-                    if (getWorld()->validPos(newX, newY)){
-                        setDirection(up);
+        int dir = getWalkDirection();
+        if (ticks_to_move % 8 == 0) {
+            int newX = 0;
+            int newY = 0;
+            switch(dir) {
+                case (right):
+                    getPositionInThisDirection(right, 16, newX, newY);
+                    if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
+                        getPositionInThisDirection(up, 16, newX, newY);
+                        if (getWorld()->validPos(newX, newY)){
+                            setWalkDirection(up);
+                        }
+                        getPositionInThisDirection(down, 16, newX, newY);
+                        if (getWorld()->validPos(newX, newY)) //always returns false
+                            setWalkDirection(down);
                     }
-                    getPositionInThisDirection(down, 2, newX, newY);
-                    if (getWorld()->validPos(newX, newY)) //always returns false
-                        setDirection(down);
-                }
-                break;
-            case(up):
-                getPositionInThisDirection(up, 2, newX, newY);
-                if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
-                    getPositionInThisDirection(right, 2, newX, newY);
-                    if (getWorld()->validPos(newX, newY))
-                        setDirection(right);
-                    else
-                        setDirection(left);
-                }
-                break;
-            case(left):
-                getPositionInThisDirection(left, 2, newX, newY);
-                if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
-                    getPositionInThisDirection(up, 2, newX, newY);
-                    if (getWorld()->validPos(newX, newY))
-                        setDirection(up);
-                    else
-                        setDirection(down);
-                }
-                break;
-            case(down):
-                getPositionInThisDirection(down, 2, newX, newY);
-                if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
-                    getPositionInThisDirection(right, 2, newX, newY);
-                    if (getWorld()->validPos(newX, newY))
-                        setDirection(right);
-                    else
-                        setDirection(left);
-                }
-                break;
-            default:
-                break; //non valid direction
+                    break;
+                case(up):
+                    getPositionInThisDirection(up, 16, newX, newY);
+                    if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
+                        getPositionInThisDirection(right, 16, newX, newY);
+                        if (getWorld()->validPos(newX, newY))
+                            setWalkDirection(right);
+                        else
+                            setWalkDirection(left);
+                    }
+                    break;
+                case(left):
+                    getPositionInThisDirection(left, 16, newX, newY);
+                    if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
+                        getPositionInThisDirection(up, 16, newX, newY);
+                        if (getWorld()->validPos(newX, newY))
+                            setWalkDirection(up);
+                        else
+                            setWalkDirection(down);
+                    }
+                    break;
+                case(down):
+                    getPositionInThisDirection(down, 16, newX, newY);
+                    if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
+                        getPositionInThisDirection(right, 16, newX, newY);
+                        if (getWorld()->validPos(newX, newY))
+                            setWalkDirection(right);
+                        else
+                            setWalkDirection(left);
+                    }
+                    break;
+                default:
+                    break; //non valid direction
+            }
         }
         
-        if (dir == left) //sprite facing direction
-            spriteDir = left;
+        if (getWalkDirection() == left)
+            setDirection(left);
         else
-            spriteDir = right;
+            setDirection(right);
         
-        switch (dir) { //walk two steps
+        switch (getWalkDirection()) { //walk two steps
             case (right):
-                goTo(getX()+2, getY()); //goto or moveto???
+                moveTo(getX()+2, getY()); //goto or moveto???
                 break;
             case (up):
-                goTo(getX(), getY()+2);
+                moveTo(getX(), getY()+2);
                 break;
             case (left):
-                goTo(getX()-2, getY());
+                moveTo(getX()-2, getY());
                 break;
             case (down):
-                goTo(getX(), getY()-2);
+                moveTo(getX(), getY()-2);
                 break;
             default:
                 break;
@@ -95,15 +97,19 @@ void Player::doSomething() {
     }
 }
 
-bool Player::goTo(int m_x, int m_y) { //change later
-    if (getWorld()->validPos(m_x, m_y)) {
-        moveTo(m_x, m_y);
-        return true;
-    }
-    return false;
-}
+//bool Player::goTo(int m_x, int m_y) { //change later
+//    if (getWorld()->validPos(m_x, m_y)) {
+//        moveTo(m_x, m_y);
+//        return true;
+//    }
+//    return false;
+//}
 
 void BlueCoinSquare::doSomething() {
+    if (living) {
+        //increase coins by 3
+        return;
+    }
     return;
 }
 //void Yoshi::doSomething() {
