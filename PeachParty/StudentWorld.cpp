@@ -54,10 +54,12 @@ int StudentWorld::init()
                     case Board::empty:
                         break;
                     case Board::boo:
-                        //addActor(new Boo());
+                        addActor(new Boo(this, i, j));
+                        addActor(new BlueCoinSquare(this, i, j));
                         break;
                     case Board::bowser:
-                        //addActor(new Bowser());
+                        addActor(new Bowser(this, i, j));
+                        addActor(new BlueCoinSquare(this, i, j));
                         break;
                     case Board::player:
                         peach = new Peach(this, i, j);

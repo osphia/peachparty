@@ -7,16 +7,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "6D61B35D-9395-41AE-BFA4-59A204AC1524"
+            uuid = "E759FCEE-1DF9-4167-AD5E-314C39EC271B"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PeachParty/Actor.cpp"
+            filePath = "PeachParty/StudentWorld.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "10"
-            endingLineNumber = "10"
-            landmarkName = "Player::doSomething()"
+            startingLineNumber = "94"
+            endingLineNumber = "94"
+            landmarkName = "StudentWorld::init()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

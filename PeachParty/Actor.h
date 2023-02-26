@@ -19,62 +19,82 @@ private:
 };
 
 //players
-class Player : public Actor {
+class MobileActor : public Actor {
 public:
-    Player(StudentWorld* world, int imageID, int startX, int startY, int spriteDir, int numPlayer): Actor(world, imageID, startX, startY, 0), playerNum(numPlayer){};
+    MobileActor(StudentWorld* world, int imageID, int startX, int startY, int spriteDir): Actor(world, imageID, startX, startY, 0) {};
     //virtual ~Player();
     virtual void doSomething();
+    virtual void doAction() = 0;
+    virtual void attemptWalk() = 0;
     int getWalkDirection() {return walkDir;}
     void setWalkDirection(int d) {walkDir = d;}
-    int getNumPlayer() {return playerNum;}
-private:
-    bool goTo(int m_x, int m_y);
-    int numCoins = 0;
-    int numStars = 0;
-    bool hasVortex = false;
-    int playerNum;
+    virtual void turningPoint();
+    virtual void setPauseCounter() = 0;
+protected:
     bool state = true; //waiting = true, walking = false
     int ticks_to_move = 0;
     int walkDir = 0;
 };
 
-class Peach : public Player {
+class Avatar : public MobileActor {
 public:
-    Peach(StudentWorld* world, int startX, int startY) : Player(world, IID_PEACH, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, right, 1) {};
+    Avatar(StudentWorld* world, int imageID, int startX, int startY, int spriteDir, int numPlayer): MobileActor(world, imageID, startX, startY, 0), playerNum(numPlayer){};
+    //virtual void doSomething();
+    virtual void doAction();
+    virtual void attemptWalk();
+    void setPauseCounter() {return;}
+    int getNumPlayer() {return playerNum;}
+private:
+    int playerNum;
+    int numCoins = 0;
+    int numStars = 0;
+    bool hasVortex = false;
+};
+
+class Peach : public Avatar {
+public:
+    Peach(StudentWorld* world, int startX, int startY) : Avatar(world, IID_PEACH, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, right, 1) {};
     //virtual ~Peach();
     //virtual void doSomething();
 private:
 };
 
-class Yoshi : public Player {
+class Yoshi : public Avatar {
 public:
-    Yoshi(StudentWorld* world, int startX, int startY) : Player(world, IID_YOSHI, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, right, 2) {};
+    Yoshi(StudentWorld* world, int startX, int startY) : Avatar(world, IID_YOSHI, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, right, 2) {};
     //virtual void doSomething();
 private:
 };
-//
-////baddies
-//class Baddie : public Actor {
-//public:
-//
-//private:
-//
-//};
-//
-//class Boo : public Baddie {
-//public:
-//
-//private:
-//
-//};
-//
-//class Bowser : public Baddie {
-//public:
-//
-//private:
-//
-//};
-//
+
+//baddies
+class Baddie : public MobileActor {
+public:
+    Baddie(StudentWorld* world, int imageID, int startX, int startY) : MobileActor(world, imageID, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, right) {};
+    virtual void doAction();
+    virtual void doBadAction() = 0;
+    virtual void attemptWalk();
+    void setPauseCounter() {pauseCounter = 180;}
+protected:
+    int pauseCounter = 180;
+    int squares_to_move;
+};
+
+class Boo : public Baddie {
+public:
+    Boo(StudentWorld* world, int startX, int startY) : Baddie(world, IID_BOO, startX, startY) {};
+    virtual void doBadAction();
+private:
+
+};
+
+class Bowser : public Baddie {
+public:
+    Bowser(StudentWorld* world, int startX, int startY) : Baddie(world, IID_BOWSER, startX, startY) {};
+    virtual void doBadAction();
+private:
+
+};
+
 ////square
 class Square : public Actor {
 public:
@@ -97,8 +117,6 @@ public:
 private:
     bool living;
 };
-
-
 
 class RedCoinSquare : public CoinSquare {
 public:
