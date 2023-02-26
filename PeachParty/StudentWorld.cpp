@@ -46,7 +46,7 @@ int StudentWorld::init()
     if (result == Board::load_fail_file_not_found || result == Board::load_fail_bad_format)
         return GWSTATUS_BOARD_ERROR;
     else if (result == Board::load_success) {
-        cerr << "Successfully loaded board\n";
+        //cerr << "Successfully loaded board\n";
         for (int i = 0; i < 16; i ++) {
             for (int j = 0; j < 16; j++) {
                 Board::GridEntry ge = bd.getContentsOf(i, j);
@@ -61,35 +61,35 @@ int StudentWorld::init()
                         break;
                     case Board::player:
                         peach = new Peach(this, i, j);
+                        yoshi = new Yoshi(this, i,j);
                         addActor(new BlueCoinSquare(this, i, j));
-//                        yoshi = new Yoshi(this, i,j);
                         break;
                     case Board::red_coin_square:
-                        //addActor(new RedCoinSquare());
+                        addActor(new RedCoinSquare(this, i, j));
                         break;
                     case Board::blue_coin_square:
                         addActor(new BlueCoinSquare(this, i, j));
                         break;
                     case Board::up_dir_square:
-                        //addActor(new DirectionalSquare());
+                        addActor(new DirectionalSquare(this, i, j, 90));
                         break;
                     case Board::down_dir_square:
-                        //addActor(new DirectionalSquare());
+                        addActor(new DirectionalSquare(this, i, j, 270));
                         break;
                     case Board::left_dir_square:
-                        //addActor(new DirectionalSquare());
+                        addActor(new DirectionalSquare(this, i, j, 180));
                         break;
                     case Board::right_dir_square:
-                        //addActor(new DirectionalSquare());
+                        addActor(new DirectionalSquare(this, i, j, 0));
                         break;
                     case Board::event_square:
-                        //addActor(new EventSquare());
+                        addActor(new EventSquare(this, i, j));
                         break;
                     case Board::bank_square:
-                        //addActor(new BankSquare());
+                        addActor(new BankSquare(this, i, j));
                         break;
                     case Board::star_square:
-                        //addActor(new StarSquare());
+                        addActor(new StarSquare(this, i, j));
                         break;
                 }
             }
@@ -120,10 +120,11 @@ int StudentWorld::move()
     // PSEUDOCODE ON PG 19
     if (peach->isAlive())
         peach->doSomething();
+    if (yoshi->isAlive())
+        yoshi->doSomething();
     for (Actor* t : actors) {
-        if (t->isAlive()) {
+        if (t->isAlive())
             t->doSomething();
-        }
     }
     
     // Remove newly-inactive actors after each tick
@@ -157,8 +158,8 @@ void StudentWorld::cleanUp()
     
     delete peach;
     peach = nullptr;
-//    delete yoshi;
-//    yoshi = nullptr;
+    delete yoshi;
+    yoshi = nullptr;
 }
 
 
@@ -174,13 +175,13 @@ bool StudentWorld::validPos(int x, int y) { //change later
     if (result == Board::load_fail_file_not_found || result == Board::load_fail_bad_format)
         return GWSTATUS_BOARD_ERROR;
     else if (result == Board::load_success) {
-        cerr << "Successfully loaded board\n";
+        //cerr << "Successfully loaded board\n";
 
     }
     
     Board::GridEntry ge = bd.getContentsOf(x/SPRITE_WIDTH, y/SPRITE_HEIGHT);
-    cerr << x << " " << y << endl;
-    cerr << x/SPRITE_WIDTH << " " << y/SPRITE_HEIGHT << endl;
+    //cerr << x << " " << y << endl;
+    //cerr << x/SPRITE_WIDTH << " " << y/SPRITE_HEIGHT << endl;
     if (ge != Board::empty) {
         return true;
     }

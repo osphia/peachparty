@@ -6,14 +6,18 @@
 
 void Player::doSomething() {
     if (state) { //still state
-        int action = getWorld()->getAction(1); //only for peach, change later
+        int action;
+        if (this->getNumPlayer() == 1)
+            action = getWorld()->getAction(1); //only for peach, change later
+        else
+            action = getWorld()->getAction(2);
         if (action != ACTION_NONE) { //change later
             if (action == ACTION_ROLL) {
                 int die_roll = randInt(1, 10);
                 ticks_to_move = die_roll*8;
                 state = false;
             }
-    }
+        }
         else {
             return;
         }
@@ -97,14 +101,6 @@ void Player::doSomething() {
     }
 }
 
-//bool Player::goTo(int m_x, int m_y) { //change later
-//    if (getWorld()->validPos(m_x, m_y)) {
-//        moveTo(m_x, m_y);
-//        return true;
-//    }
-//    return false;
-//}
-
 void BlueCoinSquare::doSomething() {
     if (living) {
         //increase coins by 3
@@ -112,7 +108,31 @@ void BlueCoinSquare::doSomething() {
     }
     return;
 }
-//void Yoshi::doSomething() {
-//    std::cerr << "what";
-//    return;
-//}
+
+void RedCoinSquare::doSomething() {
+    if (living) {
+        //decrease coins by 3
+        return;
+    }
+    return;
+}
+
+void StarSquare::doSomething() {
+    return;
+}
+
+void DirectionalSquare::doSomething() {
+    return;
+}
+
+void BankSquare::doSomething() {
+    return;
+}
+
+void EventSquare::doSomething() {
+    return;
+}
+
+void DroppingSquare::doSomething() {
+    return;
+}
