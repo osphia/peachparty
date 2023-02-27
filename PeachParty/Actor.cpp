@@ -11,16 +11,16 @@ void MobileActor::doSomething() {
         attemptWalk();
         switch (getWalkDirection()) { //walk two steps
             case (right):
-                moveTo(getX()+2, getY()); //goto or moveto???
+                moveAtAngle(right, 2);
                 break;
             case (up):
-                moveTo(getX(), getY()+2);
+                moveAtAngle(up, 2);
                 break;
             case (left):
-                moveTo(getX()-2, getY());
+                moveAtAngle(left, 2);
                 break;
             case (down):
-                moveTo(getX(), getY()-2);
+                moveAtAngle(down, 2);
                 break;
             default:
                 break;
@@ -98,6 +98,7 @@ void Avatar::doAction() {
             int die_roll = randInt(1, 10);
             ticks_to_move = die_roll*8;
             state = false;
+            
         }
     }
     else {
@@ -147,22 +148,28 @@ void Boo::doBadAction() {
         getWorld()->playSound(SOUND_BOO_ACTIVATE);
 }
 
-void BlueCoinSquare::doSomething() {
-    if (living) {
-        //increase coins by 3
+void Square::hasLanded() {
+    if (getWorld()->getPlayer()->getX() == this->getX() && getWorld()->getPlayer()->getY() == this->getY() && getWorld()->getPlayer()->getState() && newPlayer) {
+        newPlayer = false;
+        squareAction();
+    }
+    if (!getWorld()->getPlayer()->getState())
+        newPlayer = true;
+}
+    
+void BlueCoinSquare::squareAction() {
+    getWorld()->getPlayer()->addCoins();
+    std::cerr << getWorld()->getPlayer()->getCoins() << std::endl;
+    getWorld()->playSound(SOUND_GIVE_COIN);
+}
+    
+void CoinSquare::doSomething() {
+    if (!living) {
         return;
     }
-    return;
+    hasLanded();
 }
-
-void RedCoinSquare::doSomething() {
-    if (living) {
-        //decrease coins by 3
-        return;
-    }
-    return;
-}
-
+    
 void StarSquare::doSomething() {
     return;
 }

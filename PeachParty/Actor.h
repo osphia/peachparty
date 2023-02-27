@@ -13,6 +13,9 @@ public:
     virtual void doSomething() = 0;
         StudentWorld* getWorld() {return m_game;}
     virtual bool isAlive() { return alive; }
+    virtual bool getState() {return false;}
+    virtual void addCoins() {return;}
+    virtual int getCoins() {return 1;} //delete later
 private:
     StudentWorld* m_game;
     bool alive = true;
@@ -28,6 +31,7 @@ public:
     virtual void attemptWalk() = 0;
     int getWalkDirection() {return walkDir;}
     void setWalkDirection(int d) {walkDir = d;}
+    bool getState() {return state;}
     virtual void turningPoint();
     virtual void setPauseCounter() = 0;
 protected:
@@ -44,6 +48,8 @@ public:
     virtual void attemptWalk();
     void setPauseCounter() {return;}
     int getNumPlayer() {return playerNum;}
+    void addCoins() {numCoins += 3;}
+    int getCoins() {return numCoins;}
 private:
     int playerNum;
     int numCoins = 0;
@@ -99,31 +105,32 @@ private:
 class Square : public Actor {
 public:
     Square(StudentWorld* world, int imageID, int startX, int startY, int spriteDir): Actor(world, imageID, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, 1){};
+    virtual void hasLanded();
+    virtual void squareAction(){}
 private:
     bool isAlive;
+    bool newPlayer = true;
 };
 
 class CoinSquare : public Square {
 public:
     CoinSquare(StudentWorld* world, int imageID, int startX, int startY) : Square(world, imageID, startX, startY, 0){};
+    virtual void doSomething();
 private:
-
+    bool living = true;
 };
 
 class BlueCoinSquare : public CoinSquare {
 public:
     BlueCoinSquare(StudentWorld* world, int startX, int startY) : CoinSquare(world, IID_BLUE_COIN_SQUARE, startX, startY){};
-    virtual void doSomething();
+    virtual void squareAction();
 private:
-    bool living;
 };
 
 class RedCoinSquare : public CoinSquare {
 public:
     RedCoinSquare(StudentWorld* world, int startX, int startY) : CoinSquare(world, IID_RED_COIN_SQUARE, startX, startY){};
-    virtual void doSomething();
 private:
-    bool living;
 };
 
 class StarSquare : public Square {

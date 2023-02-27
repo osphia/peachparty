@@ -178,7 +178,6 @@ bool StudentWorld::validPos(int x, int y) { //change later
         return GWSTATUS_BOARD_ERROR;
     else if (result == Board::load_success) {
         //cerr << "Successfully loaded board\n";
-
     }
     
     Board::GridEntry ge = bd.getContentsOf(x/SPRITE_WIDTH, y/SPRITE_HEIGHT);
@@ -188,4 +187,8 @@ bool StudentWorld::validPos(int x, int y) { //change later
         return true;
     }
     return false;
+}
+
+Actor* StudentWorld::getPlayer() {
+    return peach;
 }
