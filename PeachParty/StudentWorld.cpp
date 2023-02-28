@@ -189,6 +189,10 @@ bool StudentWorld::validPos(int x, int y) { //change later
     return false;
 }
 
-Actor* StudentWorld::getPlayer() {
-    return peach;
+Actor* StudentWorld::getPlayer(int pNum) {
+    if (pNum == 1)
+        return peach;
+    return yoshi;
 }
+
+

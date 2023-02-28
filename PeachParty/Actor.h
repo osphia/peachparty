@@ -15,6 +15,7 @@ public:
     virtual bool isAlive() { return alive; }
     virtual bool getState() {return false;}
     virtual void addCoins() {return;}
+    virtual void subtractCoins() {return;}
     virtual int getCoins() {return 1;} //delete later
 private:
     StudentWorld* m_game;
@@ -49,6 +50,7 @@ public:
     void setPauseCounter() {return;}
     int getNumPlayer() {return playerNum;}
     void addCoins() {numCoins += 3;}
+    void subtractCoins() {numCoins -= 3;}
     int getCoins() {return numCoins;}
 private:
     int playerNum;
@@ -101,15 +103,16 @@ private:
 
 };
 
-////square
+//square
 class Square : public Actor {
 public:
     Square(StudentWorld* world, int imageID, int startX, int startY, int spriteDir): Actor(world, imageID, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, 1){};
-    virtual void hasLanded();
-    virtual void squareAction(){}
+    virtual void hasLanded(int pNum);
+    virtual void squareAction(int pNum){} //change to pure virtual
 private:
     bool isAlive;
-    bool newPlayer = true;
+    bool newPeach = true;
+    bool newYoshi = true;
 };
 
 class CoinSquare : public Square {
@@ -123,13 +126,14 @@ private:
 class BlueCoinSquare : public CoinSquare {
 public:
     BlueCoinSquare(StudentWorld* world, int startX, int startY) : CoinSquare(world, IID_BLUE_COIN_SQUARE, startX, startY){};
-    virtual void squareAction();
+    virtual void squareAction(int pNum);
 private:
 };
 
 class RedCoinSquare : public CoinSquare {
 public:
     RedCoinSquare(StudentWorld* world, int startX, int startY) : CoinSquare(world, IID_RED_COIN_SQUARE, startX, startY){};
+    virtual void squareAction(int pNum);
 private:
 };
 

@@ -98,7 +98,6 @@ void Avatar::doAction() {
             int die_roll = randInt(1, 10);
             ticks_to_move = die_roll*8;
             state = false;
-            
         }
     }
     else {
@@ -148,18 +147,34 @@ void Boo::doBadAction() {
         getWorld()->playSound(SOUND_BOO_ACTIVATE);
 }
 
-void Square::hasLanded() {
-    if (getWorld()->getPlayer()->getX() == this->getX() && getWorld()->getPlayer()->getY() == this->getY() && getWorld()->getPlayer()->getState() && newPlayer) {
-        newPlayer = false;
-        squareAction();
+void Square::hasLanded(int pNum) {
+    if (getWorld()->getPlayer(pNum)->getX() == this->getX() && getWorld()->getPlayer(pNum)->getY() == this->getY() && getWorld()->getPlayer(pNum)->getState()) {
+        if (pNum == 1 && newPeach) {
+            newPeach = false;
+            squareAction(pNum);
+        }
+        if (pNum == 2 && newYoshi) {
+            newYoshi = false;
+            squareAction(pNum);
+        }
     }
-    if (!getWorld()->getPlayer()->getState())
-        newPlayer = true;
+    if (!getWorld()->getPlayer(pNum)->getState()) {
+        if (pNum == 1)
+            newPeach = true;
+        else
+            newYoshi = true;
+    }
 }
     
-void BlueCoinSquare::squareAction() {
-    getWorld()->getPlayer()->addCoins();
-    std::cerr << getWorld()->getPlayer()->getCoins() << std::endl;
+void BlueCoinSquare::squareAction(int pNum) {
+    getWorld()->getPlayer(pNum)->addCoins();
+    std::cerr << getWorld()->getPlayer(pNum)->getCoins() << std::endl;
+    getWorld()->playSound(SOUND_GIVE_COIN);
+}
+
+void RedCoinSquare::squareAction(int pNum) {
+    getWorld()->getPlayer(pNum)->subtractCoins();
+    std::cerr << getWorld()->getPlayer(pNum)->getCoins() << std::endl;
     getWorld()->playSound(SOUND_GIVE_COIN);
 }
     
@@ -167,7 +182,8 @@ void CoinSquare::doSomething() {
     if (!living) {
         return;
     }
-    hasLanded();
+    hasLanded(1);
+    hasLanded(2);
 }
     
 void StarSquare::doSomething() {

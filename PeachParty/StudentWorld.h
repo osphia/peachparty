@@ -20,7 +20,7 @@ public:
     virtual int move();
     virtual void cleanUp();
     bool validPos(int x, int y);
-    Actor* getPlayer();
+    Actor* getPlayer(int pNum);
 
 private:
     int m_lives;
