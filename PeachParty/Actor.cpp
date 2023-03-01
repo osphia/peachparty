@@ -96,6 +96,7 @@ void Avatar::doAction() {
     if (action != ACTION_NONE) { //change later
         if (action == ACTION_ROLL) {
             int die_roll = randInt(1, 10);
+            setRoll(die_roll);
             ticks_to_move = die_roll*8;
             state = false;
         }
@@ -147,41 +148,44 @@ void Boo::doBadAction() {
         getWorld()->playSound(SOUND_BOO_ACTIVATE);
 }
 
-void Square::hasLanded(int pNum) {
-    if (getWorld()->getPlayer(pNum)->getX() == this->getX() && getWorld()->getPlayer(pNum)->getY() == this->getY() && getWorld()->getPlayer(pNum)->getState()) {
-        if (pNum == 1 && newPeach) {
-            newPeach = false;
-            squareAction(pNum);
+void Square::hasLandedOrPassed(int pNum) {
+    if (getWorld()->getPlayer(pNum)->getX() == this->getX() && getWorld()->getPlayer(pNum)->getY() == this->getY()) {
+        if (!getWorld()->getPlayer(pNum)->getState()) {
+            if (pNum == 1 && passPeach) {
+                passPeach = false;
+                passAction(pNum);
+                return;
+            }
+            if (pNum == 2 && passYoshi) {
+                passYoshi = false;
+                passAction(pNum);
+                return;
+            }
         }
-        if (pNum == 2 && newYoshi) {
-            newYoshi = false;
-            squareAction(pNum);
-        }
-    }
-    if (!getWorld()->getPlayer(pNum)->getState()) {
-        if (pNum == 1)
-            newPeach = true;
-        else
-            newYoshi = true;
-    }
-}
-
-void Square::hasPassed(int pNum) {
-    if (getWorld()->getPlayer(pNum)->getX() == this->getX() && getWorld()->getPlayer(pNum)->getY() == this->getY() && !getWorld()->getPlayer(pNum)->getState()) {
-        if (pNum == 1 && passPeach) {
-            passPeach = false;
-            passAction(pNum);
-        }
-        if (pNum == 2 && passYoshi) {
-            passYoshi = false;
-            passAction(pNum);
+        else {
+            if (pNum == 1 && newPeach) {
+                newPeach = false;
+                passPeach = false;
+                squareAction(pNum);
+                return;
+            }
+            if (pNum == 2 && newYoshi) {
+                newYoshi = false;
+                passYoshi = false;
+                squareAction(pNum);
+                return;
+            }
         }
     }
     else {
-        if (pNum == 1)
+        if (pNum == 1) {
             passPeach = true;
-        else
+            newPeach = true;
+        }
+        if (pNum == 2){
             passYoshi = true;
+            newYoshi = true;
+        }
     }
 }
     
@@ -204,12 +208,18 @@ void StarSquare::squareAction(int pNum) {
         getWorld()->getPlayer(pNum)->addCoins(-20);
         getWorld()->getPlayer(pNum)->addStar();
         getWorld()->playSound(SOUND_GIVE_STAR);
-        std::cerr<< "got star" << std::endl;
     }
 }
 
+void StarSquare::passAction(int pNum) {
+    squareAction(pNum);
+}
 void DirectionalSquare::squareAction(int pNum) {
     getWorld()->getPlayer(pNum)->setWalkDirection(forcingDirection);
+}
+
+void DirectionalSquare::passAction(int pNum) {
+    squareAction(pNum);
 }
 
 void BankSquare::squareAction(int pNum) {
@@ -233,17 +243,19 @@ void BankSquare::passAction(int pNum) {
 }
 
 void Square::doSomething() {
-    hasLanded(1); //when player lands it does both landed and passed
-    hasPassed(1);
-    hasLanded(2);
-    hasPassed(2);
+//    hasLanded(1); //when player lands it does both landed and passed
+//    hasPassed(1);
+//    hasLanded(2);
+//    hasPassed(2);
+    hasLandedOrPassed(1);
+    hasLandedOrPassed(2);
 }
 void CoinSquare::doSomething() {
     if (!living) {
         return;
     }
-    hasLanded(1);
-    hasLanded(2);
+    hasLandedOrPassed(1);
+    hasLandedOrPassed(2);
 }
 
 void EventSquare::doSomething() {

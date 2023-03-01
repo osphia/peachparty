@@ -11,7 +11,7 @@ public:
     Actor(StudentWorld* world, int imageID, int startX, int startY, int depth) : GraphObject(imageID, startX, startY, right, 0), m_game(world) {};
     //virtual ~Actor();
     virtual void doSomething() = 0;
-        StudentWorld* getWorld() {return m_game;}
+    StudentWorld* getWorld() {return m_game;}
     virtual bool isAlive() { return alive; }
     virtual bool getState() {return false;}
     virtual void addCoins(int num) {return;}
@@ -19,6 +19,7 @@ public:
     virtual int getStars() {return 1;} //change later
     virtual void addStar() {return;}
     virtual void setWalkDirection(int d){}; //change
+    virtual int getRoll() {return 1;}
 private:
     StudentWorld* m_game;
     bool alive = true;
@@ -55,11 +56,14 @@ public:
     int getCoins() {return numCoins;}
     int getStars() {return numStars;}
     void addStar() {numStars++;}
+    int getRoll() {return m_roll;}
+    void setRoll(int roll) {m_roll = roll;}
     
 private:
     int playerNum;
     int numCoins = 0;
     int numStars = 0;
+    int m_roll = 0;
     bool hasVortex = false;
 };
 
@@ -112,10 +116,11 @@ class Square : public Actor {
 public:
     Square(StudentWorld* world, int imageID, int startX, int startY, int spriteDir): Actor(world, imageID, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, 1){};
     virtual void doSomething();
-    virtual void hasLanded(int pNum);
-    virtual void hasPassed(int pNum);
+    //virtual void hasLanded(int pNum);
+    //virtual void hasPassed(int pNum);
+    virtual void hasLandedOrPassed(int pNum);
     virtual void squareAction(int pNum){} //change to pure virtual
-    virtual void passAction(int pNum){squareAction(pNum);}
+    virtual void passAction(int pNum){return;}
 private:
     bool isAlive;
     bool newPeach = true;
@@ -150,6 +155,7 @@ class StarSquare : public Square {
 public:
     StarSquare(StudentWorld* world, int startX, int startY) : Square(world, IID_STAR_SQUARE, startX, startY, 0){};
     virtual void squareAction(int pNum);
+    virtual void passAction(int pNum);
 private:
 };
 
@@ -157,6 +163,7 @@ class DirectionalSquare : public Square {
 public:
     DirectionalSquare(StudentWorld* world, int startX, int startY, int squareDir) : Square(world, IID_DIR_SQUARE, startX, startY, squareDir){setDirection(squareDir); forcingDirection = squareDir;};
     virtual void squareAction(int pNum);
+    virtual void passAction(int pNum);
 private:
     int forcingDirection;
 };

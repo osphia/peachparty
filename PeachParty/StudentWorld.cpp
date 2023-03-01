@@ -131,7 +131,7 @@ int StudentWorld::move()
     //remove inactive/dead game objects
     // Update the Game Status Line
     //update display text // update the coins/stars stats text at screen top
-    string stats = "P1 Roll: 3 Stars: " + to_string(this->getPlayer(1)->getStars()) + " $$: " + to_string(this->getPlayer(1)->getCoins()) + " | Time: " + to_string(timeRemaining()) + " | Bank: " + to_string(this->getBankBalance()) + " | P2 Roll: 0 Stars: " + to_string(this->getPlayer(2)->getStars()) + " $$: " +  to_string(this->getPlayer(2)->getCoins());
+    string stats = "P1 Roll: " + to_string(this->getPlayer(1)->getRoll()) + " Stars: " + to_string(this->getPlayer(1)->getStars()) + " $$: " + to_string(this->getPlayer(1)->getCoins()) + " | Time: " + to_string(timeRemaining()) + " | Bank: " + to_string(this->getBankBalance()) + " | P2 Roll: " + to_string(this->getPlayer(2)->getRoll()) + " Stars: " + to_string(this->getPlayer(2)->getStars()) + " $$: " +  to_string(this->getPlayer(2)->getCoins());
     setGameStatText(stats);
 
     // This code is here merely to allow the game to build, run, and terminate after you hit ESC.
