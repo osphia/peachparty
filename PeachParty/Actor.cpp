@@ -165,37 +165,85 @@ void Square::hasLanded(int pNum) {
             newYoshi = true;
     }
 }
+
+void Square::hasPassed(int pNum) {
+    if (getWorld()->getPlayer(pNum)->getX() == this->getX() && getWorld()->getPlayer(pNum)->getY() == this->getY() && !getWorld()->getPlayer(pNum)->getState()) {
+        if (pNum == 1 && passPeach) {
+            passPeach = false;
+            passAction(pNum);
+        }
+        if (pNum == 2 && passYoshi) {
+            passYoshi = false;
+            passAction(pNum);
+        }
+    }
+    else {
+        if (pNum == 1)
+            passPeach = true;
+        else
+            passYoshi = true;
+    }
+}
     
 void BlueCoinSquare::squareAction(int pNum) {
-    getWorld()->getPlayer(pNum)->addCoins();
-    std::cerr << getWorld()->getPlayer(pNum)->getCoins() << std::endl;
+    getWorld()->getPlayer(pNum)->addCoins(3);
+    //std::cerr << getWorld()->getPlayer(pNum)->getCoins() << std::endl;
     getWorld()->playSound(SOUND_GIVE_COIN);
 }
 
 void RedCoinSquare::squareAction(int pNum) {
-    getWorld()->getPlayer(pNum)->subtractCoins();
-    std::cerr << getWorld()->getPlayer(pNum)->getCoins() << std::endl;
-    getWorld()->playSound(SOUND_GIVE_COIN);
+    getWorld()->getPlayer(pNum)->addCoins(-3);
+    //std::cerr << getWorld()->getPlayer(pNum)->getCoins() << std::endl;
+    getWorld()->playSound(SOUND_TAKE_COIN);
+}
+
+void StarSquare::squareAction(int pNum) {
+    if (getWorld()->getPlayer(pNum)->getCoins() < 20)
+        return;
+    else {
+        getWorld()->getPlayer(pNum)->addCoins(-20);
+        getWorld()->getPlayer(pNum)->addStar();
+        getWorld()->playSound(SOUND_GIVE_STAR);
+        std::cerr<< "got star" << std::endl;
+    }
+}
+
+void DirectionalSquare::squareAction(int pNum) {
+    getWorld()->getPlayer(pNum)->setWalkDirection(forcingDirection);
+}
+
+void BankSquare::squareAction(int pNum) {
+    getWorld()->getPlayer(pNum)->addCoins(getWorld()->getBankBalance());
+    getWorld()->clearBankBalance();
+    getWorld()->playSound(SOUND_WITHDRAW_BANK);
 }
     
+void BankSquare::passAction(int pNum) {
+    int pCoins = getWorld()->getPlayer(pNum)->getCoins();
+    if (pCoins < 5) {
+        getWorld()->getPlayer(pNum)->addCoins(-pCoins);
+        getWorld()->changeBankBalance(pCoins);
+    }
+    else {
+        getWorld()->getPlayer(pNum)->addCoins(-5);
+        getWorld()->changeBankBalance(5);
+    }
+    getWorld()->playSound(SOUND_DEPOSIT_BANK);
+    std::cout << "bank balance: " << getWorld()->getBankBalance() << std::endl;
+}
+
+void Square::doSomething() {
+    hasLanded(1); //when player lands it does both landed and passed
+    hasPassed(1);
+    hasLanded(2);
+    hasPassed(2);
+}
 void CoinSquare::doSomething() {
     if (!living) {
         return;
     }
     hasLanded(1);
     hasLanded(2);
-}
-    
-void StarSquare::doSomething() {
-    return;
-}
-
-void DirectionalSquare::doSomething() {
-    return;
-}
-
-void BankSquare::doSomething() {
-    return;
 }
 
 void EventSquare::doSomething() {

@@ -21,11 +21,13 @@ public:
     virtual void cleanUp();
     bool validPos(int x, int y);
     Actor* getPlayer(int pNum);
+    int getBankBalance() {return bankBalance;}
+    void changeBankBalance(int num) {bankBalance += num;}
+    void clearBankBalance() {bankBalance = 0;}
 
 private:
     int m_lives;
-    int m_stars;
-    int m_coins;
+    int bankBalance = 0;
     int m_boardNumber;
     Actor* peach;
     Actor* yoshi;

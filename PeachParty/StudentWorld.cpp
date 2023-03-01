@@ -35,8 +35,6 @@ int StudentWorld::init()
     //    3. Allocate and insert all of the other objects (e.g., squares, baddies, etc.) into the
     //    game world as described below.
     //    4. Start the countdown timer for the 99-second game.
-    m_stars = 0;
-    m_coins = 0;
     m_boardNumber = getBoardNumber();
     
     Board bd;
@@ -133,11 +131,13 @@ int StudentWorld::move()
     //remove inactive/dead game objects
     // Update the Game Status Line
     //update display text // update the coins/stars stats text at screen top
+    string stats = "P1 Roll: 3 Stars: " + to_string(this->getPlayer(1)->getStars()) + " $$: " + to_string(this->getPlayer(1)->getCoins()) + " | Time: " + to_string(timeRemaining()) + " | Bank: " + to_string(this->getBankBalance()) + " | P2 Roll: 0 Stars: " + to_string(this->getPlayer(2)->getStars()) + " $$: " +  to_string(this->getPlayer(2)->getCoins());
+    setGameStatText(stats);
 
     // This code is here merely to allow the game to build, run, and terminate after you hit ESC.
     // Notice that the return value GWSTATUS_NOT_IMPLEMENTED will cause our framework to end the game.
 
-    setGameStatText("Game will end in a few seconds");
+    //setGameStatText("Game will end in a few seconds");
     
     if (timeRemaining() <= 0) {
         //play end of game sound
