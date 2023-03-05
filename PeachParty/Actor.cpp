@@ -175,10 +175,12 @@ void Square::hasLandedOrPassed(int pNum) {
         if (pNum == 1) {
             passPeach = true;
             newPeach = true;
+            newSwap = true;
         }
         if (pNum == 2){
             passYoshi = true;
             newYoshi = true;
+            newSwap = true;
         }
     }
 }
@@ -237,55 +239,50 @@ void BankSquare::passAction(int pNum) {
 }
 
 void EventSquare::squareAction(int pNum) {
-    int choose = randInt(1, 3);
-    choose = 3;
-    if (choose == 1) {
-        getWorld()->getPlayer(pNum)->teleport();
-        //make walk direction invalid so u can choose direction
-        getWorld()->playSound(SOUND_PLAYER_TELEPORT);
-    } else if (choose == 2) {
-        //swap player positions, number of ticks left to move, walk direction, sprite direction, roll/walk state
-        swapPlayers(); //don't let it retrigger if they've just been swapped
-        getWorld()->playSound(SOUND_PLAYER_TELEPORT);
-    } else {
-        //give vortex to player
-        getWorld()->getPlayer(pNum)->giveVortex();
-        getWorld()->playSound(SOUND_GIVE_VORTEX);
+    if (getNewSwap()){
+        int choose = randInt(1, 3);
+        if (choose == 1) {
+            getWorld()->getPlayer(pNum)->teleport();
+            //make walk direction invalid so u can choose direction
+            getWorld()->playSound(SOUND_PLAYER_TELEPORT);
+        } else if (choose == 2) {
+            //swap player positions, number of ticks left to move, walk direction, sprite direction, roll/walk state
+            swapPlayers(); //don't let it retrigger if they've just been swapped
+            setNewSwap(false);
+            getWorld()->playSound(SOUND_PLAYER_TELEPORT);
+        } else {
+            //give vortex to player
+            getWorld()->getPlayer(pNum)->giveVortex();
+            getWorld()->playSound(SOUND_GIVE_VORTEX);
+        }
     }
 }
 
 void EventSquare::swapPlayers() {
-    if (newSwap) {
-        //swap x,y coordinates
-        int tempX = getWorld()->getPlayer(1)->getX();
-        int tempY = getWorld()->getPlayer(1)->getY();
-        getWorld()->getPlayer(1)->moveTo(getWorld()->getPlayer(2)->getX(), getWorld()->getPlayer(2)->getY());
-        getWorld()->getPlayer(2)->moveTo(tempX, tempY);
-        
-        int tempPlayer = getWorld()->getPlayer(1)->getTicksToMove();
-        getWorld()->getPlayer(1)->setTicksToMove(getWorld()->getPlayer(2)->getTicksToMove());
-        getWorld()->getPlayer(1)->setTicksToMove(tempPlayer);
-        
-        int tempDir = getWorld()->getPlayer(1)->getWalkDirection();
-        getWorld()->getPlayer(1)->setWalkDirection(getWorld()->getPlayer(2)->getWalkDirection());
-        getWorld()->getPlayer(1)->setWalkDirection(tempDir); //works
-        
-        bool tempState = getWorld()->getPlayer(1)->getState();
-        getWorld()->getPlayer(1)->setState(getWorld()->getPlayer(2)->getState());
-        getWorld()->getPlayer(1)->setState(tempState);
-        
-        
-    }
-    newSwap = !newSwap;
+    int tempX = getWorld()->getPlayer(1)->getX();
+    int tempY = getWorld()->getPlayer(1)->getY();
+    getWorld()->getPlayer(1)->moveTo(getWorld()->getPlayer(2)->getX(), getWorld()->getPlayer(2)->getY());
+    getWorld()->getPlayer(2)->moveTo(tempX, tempY);
+    
+    int tempPlayer = getWorld()->getPlayer(1)->getTicksToMove();
+    getWorld()->getPlayer(1)->setTicksToMove(getWorld()->getPlayer(2)->getTicksToMove());
+    getWorld()->getPlayer(1)->setTicksToMove(tempPlayer);
+    
+    int tempDir = getWorld()->getPlayer(1)->getWalkDirection();
+    getWorld()->getPlayer(1)->setWalkDirection(getWorld()->getPlayer(2)->getWalkDirection());
+    getWorld()->getPlayer(1)->setWalkDirection(tempDir); //works
+    
+    bool tempState = getWorld()->getPlayer(1)->getState();
+    getWorld()->getPlayer(1)->setState(getWorld()->getPlayer(2)->getState());
+    getWorld()->getPlayer(1)->setState(tempState);
 }
 
 void DroppingSquare::squareAction(int pNum) {
-    //need accessible x,y position
     int choose = randInt(1, 2);
     if (choose == 1) {
         int pCoins = getWorld()->getPlayer(pNum)->getCoins();
-        if (pCoins < 10) {
-            getWorld()->getPlayer(pNum)->addCoins(-pCoins);
+        if (pCoins <= 10) {
+            getWorld()->getPlayer(pNum)->setCoins(0);
         }
         else {
             getWorld()->getPlayer(pNum)->addCoins(-10);
@@ -459,7 +456,7 @@ void Baddie::whenHit() {
 void Bowser::dropping() {
     int chance = randInt(1, 4);
     if (chance == 3) {
-        //getWorld()->replace(getX(), getY());
+        getWorld()->replace(getX(), getY());
         getWorld()->playSound(SOUND_DROPPING_SQUARE_CREATED);
     }
 }

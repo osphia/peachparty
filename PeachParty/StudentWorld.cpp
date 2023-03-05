@@ -94,11 +94,11 @@ int StudentWorld::init()
 
 int StudentWorld::move()
 {
+    //all actors do something
     if (peach->isAlive())
         peach->doSomething();
     if (yoshi->isAlive())
         yoshi->doSomething();
-    
     for (list<Actor*>::iterator itr = actors.begin(); itr != actors.end(); itr++) {
         if ((*itr)->isAlive()) {
             (*itr)->doSomething();
@@ -107,10 +107,20 @@ int StudentWorld::move()
             itr = actors.erase(itr);
         }
     }
-
-    string stats = "P1 Roll: " + to_string(this->getPlayer(1)->getTicksToMove()/8) + " Stars: " + to_string(this->getPlayer(1)->getStars()) + " $$: " + to_string(this->getPlayer(1)->getCoins()) + " | Time: " + to_string(timeRemaining()) + " | Bank: " + to_string(this->getBankBalance()) + " | P2 Roll: " + to_string(this->getPlayer(2)->getTicksToMove()/8) + " Stars: " + to_string(this->getPlayer(2)->getStars()) + " $$: " +  to_string(this->getPlayer(2)->getCoins());
+    
+    //update status text
+    string p1Vortex = "";
+    string p2Vortex = "";
+    if (getPlayer(1)->hasVortx()) {
+        p1Vortex = " VOR";
+    }
+    if (getPlayer(1)->hasVortx()) {
+        p2Vortex = " VOR";
+    }
+    string stats = "P1 Roll: " + to_string(this->getPlayer(1)->getTicksToMove()/8) + " Stars: " + to_string(this->getPlayer(1)->getStars()) + " $$: " + to_string(this->getPlayer(1)->getCoins()) + p1Vortex + " | Time: " + to_string(timeRemaining()) + " | Bank: " + to_string(this->getBankBalance()) + " | P2 Roll: " + to_string(this->getPlayer(2)->getTicksToMove()/8) + " Stars: " + to_string(this->getPlayer(2)->getStars()) + " $$: " +  to_string(this->getPlayer(2)->getCoins()) + p2Vortex;
     setGameStatText(stats);
     
+    //check if game is over
     if (timeRemaining() <= 0) {
         playSound(SOUND_GAME_FINISHED);
         if (yoshiWon()) {
@@ -122,6 +132,7 @@ int StudentWorld::move()
         }
     }
     
+    //continue
 	return GWSTATUS_CONTINUE_GAME;
 }
 
@@ -172,12 +183,14 @@ Actor* StudentWorld::getPlayer(int pNum) {
     return yoshi;
 }
 
-void StudentWorld::replace(int x, int y) { 
-    for (auto it = actors.begin(); it != actors.end(); ++it) {
-        if ((*it)->getX() == x && (*it)->getY() == y ) {
-            *it = new DroppingSquare(this, x, y);
+void StudentWorld::replace(int x, int y) {
+    for (list<Actor*>::iterator it = actors.begin(); it != actors.end(); it++) {
+        if ((*it)->getX() == x && (*it)->getY() == y && (*it)->getIsSquare()) {
+            delete *it;
+            it = actors.erase(it);
         }
     }
+    addActor(new DroppingSquare(this, x/SPRITE_WIDTH, y/SPRITE_HEIGHT));
 }
 
 bool StudentWorld::yoshiWon() {

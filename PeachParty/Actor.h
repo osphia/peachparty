@@ -33,16 +33,20 @@ public:
     virtual void setForce(int num) {return;}
     virtual void whenHit() {return;}
     virtual void giveVortex(){return;}
+    virtual bool hasVortx() {return false;}
+    virtual void setIsSquare(bool val) {isSquare = val;}
+    bool getIsSquare() {return isSquare;}
 private:
     StudentWorld* m_game;
     bool alive = true;
+    bool isSquare = false;
     
 };
 
 //players
 class MobileActor : public Actor {
 public:
-    MobileActor(StudentWorld* world, int imageID, int startX, int startY, int spriteDir): Actor(world, imageID, startX, startY, 0) {};
+    MobileActor(StudentWorld* world, int imageID, int startX, int startY, int spriteDir): Actor(world, imageID, startX, startY, 0) {}
     //virtual ~Player();
     virtual void doSomething();
     virtual void doAction() = 0;
@@ -89,6 +93,7 @@ public:
     bool keyPressed();
     virtual bool atFork();
     virtual void giveVortex();
+    virtual bool hasVortx() {return hasVortex;}
     
 private:
     int playerNum;
@@ -150,17 +155,20 @@ private:
 //square
 class Square : public Actor {
 public:
-    Square(StudentWorld* world, int imageID, int startX, int startY, int spriteDir): Actor(world, imageID, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, 1){};
+    Square(StudentWorld* world, int imageID, int startX, int startY, int spriteDir): Actor(world, imageID, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, 1){setIsSquare(true);}
     virtual void doSomething();
     virtual void hasLandedOrPassed(int pNum);
     virtual void squareAction(int pNum){} //change to pure virtual
     virtual void passAction(int pNum){return;}
+    virtual void setNewSwap(bool swap) {newSwap = swap;}
+    virtual bool getNewSwap() {return newSwap;}
 private:
     bool isAlive;
     bool newPeach = true;
     bool newYoshi = true;
     bool passPeach = true;
     bool passYoshi = true;
+    bool newSwap = true;
 };
 
 class CoinSquare : public Square {
@@ -216,7 +224,6 @@ public:
     virtual void squareAction(int pNum);
     void swapPlayers();
 private:
-    bool newSwap = true;
 };
 
 class DroppingSquare : public Square {

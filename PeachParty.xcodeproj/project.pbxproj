@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A32399429B469F20027EF63 /* StudentWorld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B91F8B22033F3F7003AFA78 /* StudentWorld.cpp */; };
 		4B91F8BF2033F3F8003AFA78 /* GameWorld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B91F8B12033F3F7003AFA78 /* GameWorld.cpp */; };
-		4B91F8C02033F3F8003AFA78 /* StudentWorld.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B91F8B22033F3F7003AFA78 /* StudentWorld.cpp */; };
 		4B91F8C12033F3F8003AFA78 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B91F8B42033F3F7003AFA78 /* main.cpp */; };
 		4B91F8C22033F3F8003AFA78 /* Actor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B91F8B62033F3F7003AFA78 /* Actor.cpp */; };
 		4B91F8C32033F3F8003AFA78 /* GameController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4B91F8B82033F3F7003AFA78 /* GameController.cpp */; };
@@ -166,7 +166,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B91F8C32033F3F8003AFA78 /* GameController.cpp in Sources */,
-				4B91F8C02033F3F8003AFA78 /* StudentWorld.cpp in Sources */,
+				0A32399429B469F20027EF63 /* StudentWorld.cpp in Sources */,
 				4B91F8BF2033F3F8003AFA78 /* GameWorld.cpp in Sources */,
 				4B91F8C12033F3F8003AFA78 /* main.cpp in Sources */,
 				4B91F8C22033F3F8003AFA78 /* Actor.cpp in Sources */,
