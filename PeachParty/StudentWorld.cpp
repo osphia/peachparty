@@ -114,7 +114,7 @@ int StudentWorld::move()
     if (getPlayer(1)->hasVortx()) {
         p1Vortex = " VOR";
     }
-    if (getPlayer(1)->hasVortx()) {
+    if (getPlayer(2)->hasVortx()) {
         p2Vortex = " VOR";
     }
     string stats = "P1 Roll: " + to_string(this->getPlayer(1)->getTicksToMove()/8) + " Stars: " + to_string(this->getPlayer(1)->getStars()) + " $$: " + to_string(this->getPlayer(1)->getCoins()) + p1Vortex + " | Time: " + to_string(timeRemaining()) + " | Bank: " + to_string(this->getBankBalance()) + " | P2 Roll: " + to_string(this->getPlayer(2)->getTicksToMove()/8) + " Stars: " + to_string(this->getPlayer(2)->getStars()) + " $$: " +  to_string(this->getPlayer(2)->getCoins()) + p2Vortex;
@@ -154,7 +154,6 @@ void StudentWorld::cleanUp()
 
 
 //helper functions
-
 bool StudentWorld::validPos(int x, int y) { //change later
     m_boardNumber = getBoardNumber();
 
@@ -177,7 +176,7 @@ bool StudentWorld::validPos(int x, int y) { //change later
     return false;
 }
 
-Actor* StudentWorld::getPlayer(int pNum) {
+Avatar* StudentWorld::getPlayer(int pNum) {
     if (pNum == 1)
         return peach;
     return yoshi;

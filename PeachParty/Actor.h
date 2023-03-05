@@ -9,32 +9,14 @@ class StudentWorld;
 class Actor : public GraphObject {
 public:
     Actor(StudentWorld* world, int imageID, int startX, int startY, int depth) : GraphObject(imageID, startX, startY, right, 0), m_game(world) {};
-    //virtual ~Actor();
     virtual void doSomething() = 0;
-    StudentWorld* getWorld() {return m_game;}
-    virtual bool isAlive() { return alive;}
-    virtual void kill() {alive = false;}
-    virtual int getWalkDirection() {return -1;}
-    virtual void setWalkDirection(int d) {return;}
-    virtual bool getState() {return false;}
-    virtual void setState(bool b) {return;}
-    virtual int getTicksToMove() {return -1;} //change all of these bruh
-    virtual void setTicksToMove(int t) {return;}
-    virtual void addCoins(int num) {return;}
-    virtual void setCoins(int num) {return;} //change
-    virtual int getCoins() {return 1;} //delete later
-    virtual int getStars() {return 1;} //change later
-    virtual void addStar(int n) {return;}
-    virtual void setStars(int n) {return;}
-    virtual int getRoll() {return 1;}
     virtual bool impacted() {return false;}
-    virtual void teleport() {return;}
-    virtual int getForce() {return -2;}
-    virtual void setForce(int num) {return;}
     virtual void whenHit() {return;}
-    virtual void giveVortex(){return;}
-    virtual bool hasVortx() {return false;}
     virtual void setIsSquare(bool val) {isSquare = val;}
+    
+    StudentWorld* getWorld() {return m_game;}
+    bool isAlive() { return alive;}
+    void kill() {alive = false;}
     bool getIsSquare() {return isSquare;}
 private:
     StudentWorld* m_game;
@@ -47,27 +29,27 @@ private:
 class MobileActor : public Actor {
 public:
     MobileActor(StudentWorld* world, int imageID, int startX, int startY, int spriteDir): Actor(world, imageID, startX, startY, 0) {}
-    //virtual ~Player();
     virtual void doSomething();
     virtual void doAction() = 0;
-    virtual void attemptWalk() = 0;
-    virtual int getWalkDirection() {return walkDir;}
-    virtual void setWalkDirection(int d) {walkDir = d;}
-    virtual bool getState() {return state;}
-    virtual void setState(bool b) {state = b;}
-    virtual int getTicksToMove() {return ticks_to_move;}
-    virtual void setTicksToMove(int t) {ticks_to_move = t;}
-    virtual void turningPoint();
+    virtual void setPauseCounter() {return;}
+    virtual void dropping() {return;}
+    virtual bool atFork() = 0;
+    //virtual void isValidDirection(){return;}
+    
+    int getWalkDirection() {return walkDir;}
+    void setWalkDirection(int d) {walkDir = d;}
+    bool getState() {return state;}
+    void setState(bool b) {state = b;}
+    int getTicksToMove() {return ticks_to_move;}
+    void setTicksToMove(int t) {ticks_to_move = t;}
+    void turningPoint();
     void spriteDirection();
     virtual void teleport();
     bool checkFork();
     int getOppDirection(int dir);
-    virtual void setPauseCounter() = 0;
-    virtual bool atFork() = 0;
-    virtual int getForce() {return isForce;}
-    virtual void setForce(int num) {isForce = num;}
-    virtual void dropping(){return;}
-private: //CHANGE, not allowed protected
+    void setForce(int num) {isForce = num;}
+
+private:
     bool state = true; //waiting = true, walking = false
     int ticks_to_move = 0;
     int walkDir = 0;
@@ -77,23 +59,23 @@ private: //CHANGE, not allowed protected
 class Avatar : public MobileActor {
 public:
     Avatar(StudentWorld* world, int imageID, int startX, int startY, int spriteDir, int numPlayer): MobileActor(world, imageID, startX, startY, 0), playerNum(numPlayer){}
-    //virtual void doSomething();
     virtual void doAction();
-    virtual void attemptWalk();
-    void setPauseCounter() {return;}
+    virtual bool atFork();
+    //virtual void isValidDirection();
+    
     int getNumPlayer() {return playerNum;}
     void addCoins(int num) {numCoins += num;}
     int getCoins() {return numCoins;}
     void setCoins(int num) {numCoins = num;}
-    int getStars() {return numStars;}
     void addStar(int n) {numStars+= n;}
+    int getStars() {return numStars;}
     void setStars(int n) {numStars = n;}
     int getRoll() {return m_roll;}
     void setRoll(int roll) {m_roll = roll;}
     bool keyPressed();
-    virtual bool atFork();
-    virtual void giveVortex();
-    virtual bool hasVortx() {return hasVortex;}
+    void giveVortex();
+    bool hasVortx() {return hasVortex;}
+    virtual void teleport();
     
 private:
     int playerNum;
@@ -106,15 +88,12 @@ private:
 class Peach : public Avatar {
 public:
     Peach(StudentWorld* world, int startX, int startY) : Avatar(world, IID_PEACH, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, right, 1) {};
-    //virtual ~Peach();
-    //virtual void doSomething();
 private:
 };
 
 class Yoshi : public Avatar {
 public:
     Yoshi(StudentWorld* world, int startX, int startY) : Avatar(world, IID_YOSHI, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, right, 2) {};
-    //virtual void doSomething();
 private:
 };
 
@@ -124,12 +103,12 @@ public:
     Baddie(StudentWorld* world, int imageID, int startX, int startY) : MobileActor(world, imageID, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, right) {};
     virtual void doAction();
     virtual void doBadAction(int pNum) = 0;
-    virtual void attemptWalk();
-    virtual void setPauseCounter();
+    virtual void setPauseCounter(){pauseCounter = 180;}
     virtual bool impacted() {return true;}
     virtual void whenHit();
     virtual bool atFork();
-protected: //no protected, CHANGE
+    virtual int squaresToMove() = 0;
+private:
     bool newPeach = true;
     bool newYoshi = true;
     int pauseCounter = 180;
@@ -140,6 +119,7 @@ class Boo : public Baddie {
 public:
     Boo(StudentWorld* world, int startX, int startY) : Baddie(world, IID_BOO, startX, startY) {};
     virtual void doBadAction(int pNum);
+    virtual int squaresToMove() {return randInt(1, 3);}
 private:
 
 };
@@ -148,6 +128,7 @@ class Bowser : public Baddie {
 public:
     Bowser(StudentWorld* world, int startX, int startY) : Baddie(world, IID_BOWSER, startX, startY) {};
     virtual void doBadAction(int pNum);
+    virtual int squaresToMove() {return randInt(1,10);}
     virtual void dropping();
 private:
 };
@@ -158,7 +139,7 @@ public:
     Square(StudentWorld* world, int imageID, int startX, int startY, int spriteDir): Actor(world, imageID, SPRITE_WIDTH*startX, SPRITE_HEIGHT*startY, 1){setIsSquare(true);}
     virtual void doSomething();
     virtual void hasLandedOrPassed(int pNum);
-    virtual void squareAction(int pNum){} //change to pure virtual
+    virtual void squareAction(int pNum) = 0;
     virtual void passAction(int pNum){return;}
     virtual void setNewSwap(bool swap) {newSwap = swap;}
     virtual bool getNewSwap() {return newSwap;}
@@ -174,9 +155,7 @@ private:
 class CoinSquare : public Square {
 public:
     CoinSquare(StudentWorld* world, int imageID, int startX, int startY) : Square(world, imageID, startX, startY, 0){};
-    virtual void doSomething();
 private:
-    bool living = true;
 };
 
 class BlueCoinSquare : public CoinSquare {

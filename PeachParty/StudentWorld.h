@@ -20,7 +20,7 @@ public:
     virtual int move();
     virtual void cleanUp();
     bool validPos(int x, int y);
-    Actor* getPlayer(int pNum);
+    Avatar* getPlayer(int pNum);
     int getBankBalance() {return bankBalance;}
     void changeBankBalance(int num) {bankBalance += num;}
     void clearBankBalance() {bankBalance = 0;}
@@ -34,8 +34,8 @@ private:
     int m_lives;
     int bankBalance = 0;
     int m_boardNumber;
-    Actor* peach;
-    Actor* yoshi;
+    Avatar* peach;
+    Avatar* yoshi;
     std::list<Actor*> actors;
 };
 

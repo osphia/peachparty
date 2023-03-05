@@ -30,8 +30,8 @@
             filePath = "PeachParty/Actor.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "12"
-            endingLineNumber = "12"
+            startingLineNumber = "13"
+            endingLineNumber = "13"
             landmarkName = "MobileActor::doSomething()"
             landmarkType = "7">
          </BreakpointContent>
@@ -46,8 +46,8 @@
             filePath = "PeachParty/Actor.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "374"
-            endingLineNumber = "374"
+            startingLineNumber = "340"
+            endingLineNumber = "340"
             landmarkName = "MobileActor::teleport()"
             landmarkType = "7">
          </BreakpointContent>
@@ -62,8 +62,8 @@
             filePath = "PeachParty/Actor.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "370"
-            endingLineNumber = "370"
+            startingLineNumber = "336"
+            endingLineNumber = "336"
             landmarkName = "MobileActor::teleport()"
             landmarkType = "7">
          </BreakpointContent>
@@ -72,14 +72,14 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "BCC0434F-99FA-4834-A968-B7CB31BA4847"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PeachParty/Actor.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "281"
-            endingLineNumber = "281"
+            startingLineNumber = "252"
+            endingLineNumber = "252"
             landmarkName = "DroppingSquare::squareAction(pNum)"
             landmarkType = "7">
          </BreakpointContent>
