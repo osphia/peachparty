@@ -8,6 +8,11 @@ void MobileActor::doSomething() {
     if (state) { //still state
         doAction();
     } else { //walking state
+        if (checkFork() && isForce == -1){
+            if (!atFork()) //key hasn't been pressed, how to make directional square work
+                return;
+        }
+        isForce = -1;
         attemptWalk();
         switch (getWalkDirection()) { //walk two steps
             case (right):
@@ -29,87 +34,47 @@ void MobileActor::doSomething() {
         if (ticks_to_move == 0) {
             state = true;
             setPauseCounter();
+            dropping();
         }
     }
-}
-
-void MobileActor::turningPoint() {
-    int dir = getWalkDirection();
-    if (ticks_to_move % 8 == 0) {
-        int newX = 0;
-        int newY = 0;
-        switch(dir) {
-            case (right):
-                getPositionInThisDirection(right, 16, newX, newY);
-                if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
-                    getPositionInThisDirection(up, 16, newX, newY);
-                    if (getWorld()->validPos(newX, newY)){
-                        setWalkDirection(up);
-                    }
-                    getPositionInThisDirection(down, 16, newX, newY);
-                    if (getWorld()->validPos(newX, newY)) //always returns false
-                        setWalkDirection(down);
-                }
-                break;
-            case(up):
-                getPositionInThisDirection(up, 16, newX, newY);
-                if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
-                    getPositionInThisDirection(right, 16, newX, newY);
-                    if (getWorld()->validPos(newX, newY))
-                        setWalkDirection(right);
-                    else
-                        setWalkDirection(left);
-                }
-                break;
-            case(left):
-                getPositionInThisDirection(left, 16, newX, newY);
-                if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
-                    getPositionInThisDirection(up, 16, newX, newY);
-                    if (getWorld()->validPos(newX, newY))
-                        setWalkDirection(up);
-                    else
-                        setWalkDirection(down);
-                }
-                break;
-            case(down):
-                getPositionInThisDirection(down, 16, newX, newY);
-                if (!getWorld()->validPos(newX, newY)) { //what if neither are valid??
-                    getPositionInThisDirection(right, 16, newX, newY);
-                    if (getWorld()->validPos(newX, newY))
-                        setWalkDirection(right);
-                    else
-                        setWalkDirection(left);
-                }
-                break;
-            default:
-                break; //non valid direction
-        }
-    }
-    if (getWalkDirection() == left)
-        setDirection(left);
-    else
-        setDirection(right);
 }
 
 void Avatar::doAction() {
     int action = getWorld()->getAction(this->getNumPlayer()); //make sure this line works
-    if (action != ACTION_NONE) { //change later
-        if (action == ACTION_ROLL) {
+    switch (action) {
+        case ACTION_NONE: {
+            return;
+            break;
+        }
+        case ACTION_ROLL: {
             int die_roll = randInt(1, 10);
             setRoll(die_roll);
-            ticks_to_move = die_roll*8;
-            state = false;
+            setTicksToMove(die_roll*8);
+            setState(false);
+            break;
         }
-    }
-    else {
-        return;
+        case ACTION_FIRE: {
+            //create new vortex?
+            if (hasVortex) {
+                getWorld()->spawnVortex(getX(), getY(), getWalkDirection());
+                getWorld()->playSound(SOUND_PLAYER_FIRE);
+                hasVortex = false;
+            }
+        }
+        default:
+            return;
     }
 }
 
 void Avatar::attemptWalk() {
-    //if avatar on top of directional square...
     //else if avatar is directly on top of square at a fork...
     turningPoint();
+}
+
+bool Avatar::atFork() {
+    if (keyPressed())
+        return true;
+    return false;
 }
 
 void Baddie::attemptWalk() {
@@ -118,36 +83,65 @@ void Baddie::attemptWalk() {
         //update sprite facing direction
     turningPoint();
 }
+bool Baddie::atFork() {
+    return true;
+}
 
 void Baddie::doAction() {
     //if player and baddie r on same square and avatar is on waiting to roll state then do bad action
-    doBadAction();
+    for (int i = 1; i < 3; i++) {
+        if (getWorld()->getPlayer(i)->getX() == this->getX() && getWorld()->getPlayer(i)->getY() == this->getY()) {
+            if (getWorld()->getPlayer(i)->getState()) {
+                if ((i == 1 && newPeach) || (i == 2 && newYoshi)) {
+                    if (i == 1)
+                        newPeach = false;
+                    else
+                        newYoshi = false;
+                    doBadAction(i);
+                }
+            }
+        }
+        else {
+            if (i == 1)
+                newPeach = true;
+            else
+                newYoshi = true;
+        }
+    }
     pauseCounter--;
     if (pauseCounter == 0) {
         squares_to_move = randInt(1, 3);
-        ticks_to_move = squares_to_move*8;
+        setTicksToMove(squares_to_move*8);
         setWalkDirection(randInt(0, 3)*90);
-        if (getWalkDirection() == left)
-            setDirection(left);
-        else
-            setDirection(right);
-        state = false;
+        spriteDirection();
+        setState(false);
     }
 }
 
-void Bowser::doBadAction() {
+void Bowser::doBadAction(int pNum) {
     int chance = randInt(1, 2);
-    if (chance == 1)
+    if (chance == 1) {
+        getWorld()->getPlayer(pNum)->addCoins(-getCoins());
         getWorld()->playSound(SOUND_BOWSER_ACTIVATE);
-        //make player lose coins!
+    }
 }
 
-void Boo::doBadAction() {
+void Boo::doBadAction(int pNum) {
     int chance = randInt(1, 2);
-    if (chance == 1)
-        getWorld()->playSound(SOUND_BOO_ACTIVATE);
+    if (chance == 1) {
+        int temp = getWorld()->getPlayer(1)->getCoins();
+        getWorld()->getPlayer(1)->setCoins(getWorld()->getPlayer(2)->getCoins());
+        getWorld()->getPlayer(2)->setCoins(temp);
+    } else {
+        int temp = getWorld()->getPlayer(1)->getStars();
+        getWorld()->getPlayer(1)->setStars(getWorld()->getPlayer(2)->getStars());
+        getWorld()->getPlayer(2)->setStars(temp);
+    }
+    getWorld()->playSound(SOUND_BOO_ACTIVATE);
 }
 
+
+//SQUARES//
 void Square::hasLandedOrPassed(int pNum) {
     if (getWorld()->getPlayer(pNum)->getX() == this->getX() && getWorld()->getPlayer(pNum)->getY() == this->getY()) {
         if (!getWorld()->getPlayer(pNum)->getState()) {
@@ -191,13 +185,11 @@ void Square::hasLandedOrPassed(int pNum) {
     
 void BlueCoinSquare::squareAction(int pNum) {
     getWorld()->getPlayer(pNum)->addCoins(3);
-    //std::cerr << getWorld()->getPlayer(pNum)->getCoins() << std::endl;
     getWorld()->playSound(SOUND_GIVE_COIN);
 }
 
 void RedCoinSquare::squareAction(int pNum) {
     getWorld()->getPlayer(pNum)->addCoins(-3);
-    //std::cerr << getWorld()->getPlayer(pNum)->getCoins() << std::endl;
     getWorld()->playSound(SOUND_TAKE_COIN);
 }
 
@@ -206,7 +198,7 @@ void StarSquare::squareAction(int pNum) {
         return;
     else {
         getWorld()->getPlayer(pNum)->addCoins(-20);
-        getWorld()->getPlayer(pNum)->addStar();
+        getWorld()->getPlayer(pNum)->addStar(1);
         getWorld()->playSound(SOUND_GIVE_STAR);
     }
 }
@@ -214,8 +206,10 @@ void StarSquare::squareAction(int pNum) {
 void StarSquare::passAction(int pNum) {
     squareAction(pNum);
 }
+
 void DirectionalSquare::squareAction(int pNum) {
     getWorld()->getPlayer(pNum)->setWalkDirection(forcingDirection);
+    getWorld()->getPlayer(pNum)->setForce(forcingDirection);
 }
 
 void DirectionalSquare::passAction(int pNum) {
@@ -239,14 +233,70 @@ void BankSquare::passAction(int pNum) {
         getWorld()->changeBankBalance(5);
     }
     getWorld()->playSound(SOUND_DEPOSIT_BANK);
-    std::cout << "bank balance: " << getWorld()->getBankBalance() << std::endl;
+    //std::cerr << "bank balance: " << getWorld()->getBankBalance() << std::endl;
+}
+
+void EventSquare::squareAction(int pNum) {
+    int choose = randInt(1, 3);
+    choose = 3;
+    if (choose == 1) {
+        getWorld()->getPlayer(pNum)->teleport();
+        //make walk direction invalid so u can choose direction
+        getWorld()->playSound(SOUND_PLAYER_TELEPORT);
+    } else if (choose == 2) {
+        //swap player positions, number of ticks left to move, walk direction, sprite direction, roll/walk state
+        swapPlayers(); //don't let it retrigger if they've just been swapped
+        getWorld()->playSound(SOUND_PLAYER_TELEPORT);
+    } else {
+        //give vortex to player
+        getWorld()->getPlayer(pNum)->giveVortex();
+        getWorld()->playSound(SOUND_GIVE_VORTEX);
+    }
+}
+
+void EventSquare::swapPlayers() {
+    if (newSwap) {
+        //swap x,y coordinates
+        int tempX = getWorld()->getPlayer(1)->getX();
+        int tempY = getWorld()->getPlayer(1)->getY();
+        getWorld()->getPlayer(1)->moveTo(getWorld()->getPlayer(2)->getX(), getWorld()->getPlayer(2)->getY());
+        getWorld()->getPlayer(2)->moveTo(tempX, tempY);
+        
+        int tempPlayer = getWorld()->getPlayer(1)->getTicksToMove();
+        getWorld()->getPlayer(1)->setTicksToMove(getWorld()->getPlayer(2)->getTicksToMove());
+        getWorld()->getPlayer(1)->setTicksToMove(tempPlayer);
+        
+        int tempDir = getWorld()->getPlayer(1)->getWalkDirection();
+        getWorld()->getPlayer(1)->setWalkDirection(getWorld()->getPlayer(2)->getWalkDirection());
+        getWorld()->getPlayer(1)->setWalkDirection(tempDir); //works
+        
+        bool tempState = getWorld()->getPlayer(1)->getState();
+        getWorld()->getPlayer(1)->setState(getWorld()->getPlayer(2)->getState());
+        getWorld()->getPlayer(1)->setState(tempState);
+        
+        
+    }
+    newSwap = !newSwap;
+}
+
+void DroppingSquare::squareAction(int pNum) {
+    //need accessible x,y position
+    int choose = randInt(1, 2);
+    if (choose == 1) {
+        int pCoins = getWorld()->getPlayer(pNum)->getCoins();
+        if (pCoins < 10) {
+            getWorld()->getPlayer(pNum)->addCoins(-pCoins);
+        }
+        else {
+            getWorld()->getPlayer(pNum)->addCoins(-10);
+        }
+    } else {
+        if (getWorld()->getPlayer(pNum)->getStars() > 0)
+            getWorld()->getPlayer(pNum)->addStar(-1);
+    }
 }
 
 void Square::doSomething() {
-//    hasLanded(1); //when player lands it does both landed and passed
-//    hasPassed(1);
-//    hasLanded(2);
-//    hasPassed(2);
     hasLandedOrPassed(1);
     hasLandedOrPassed(2);
 }
@@ -254,14 +304,180 @@ void CoinSquare::doSomething() {
     if (!living) {
         return;
     }
-    hasLandedOrPassed(1);
-    hasLandedOrPassed(2);
+    Square::doSomething();
 }
 
-void EventSquare::doSomething() {
-    return;
+//helper functions
+void MobileActor::turningPoint() {
+    int dir = getWalkDirection();
+    if (ticks_to_move % 8 == 0) {
+        int newX = 0;
+        int newY = 0;
+        switch(dir) {
+            case (right):
+                getPositionInThisDirection(right, 16, newX, newY);
+                if (!getWorld()->validPos(newX, newY)) {
+                    getPositionInThisDirection(up, 16, newX, newY);
+                    if (getWorld()->validPos(newX, newY)){
+                        setWalkDirection(up);
+                    }
+                    getPositionInThisDirection(down, 16, newX, newY);
+                    if (getWorld()->validPos(newX, newY))
+                        setWalkDirection(down);
+                }
+                break;
+            case(up):
+                getPositionInThisDirection(up, 16, newX, newY);
+                if (!getWorld()->validPos(newX, newY)) {
+                    getPositionInThisDirection(right, 16, newX, newY);
+                    if (getWorld()->validPos(newX, newY))
+                        setWalkDirection(right);
+                    else
+                        setWalkDirection(left);
+                }
+                break;
+            case(left):
+                getPositionInThisDirection(left, 16, newX, newY);
+                if (!getWorld()->validPos(newX, newY)) {
+                    getPositionInThisDirection(up, 16, newX, newY);
+                    if (getWorld()->validPos(newX, newY))
+                        setWalkDirection(up);
+                    else
+                        setWalkDirection(down);
+                }
+                break;
+            case(down):
+                getPositionInThisDirection(down, 16, newX, newY);
+                if (!getWorld()->validPos(newX, newY)) {
+                    getPositionInThisDirection(right, 16, newX, newY);
+                    if (getWorld()->validPos(newX, newY))
+                        setWalkDirection(right);
+                    else
+                        setWalkDirection(left);
+                }
+                break;
+            default:
+                break; //non valid direction
+        }
+    }
+    spriteDirection();
 }
 
-void DroppingSquare::doSomething() {
-    return;
+void MobileActor::spriteDirection() {
+    if (getWalkDirection() == left)
+        setDirection(left);
+    else
+        setDirection(right);
+}
+
+void MobileActor::teleport() {
+    int randX;
+    int randY;
+    do {
+        randX = randInt(0, SPRITE_WIDTH*BOARD_WIDTH-1);
+        randY = randInt(0, SPRITE_HEIGHT*BOARD_HEIGHT-1);
+    } while(!getWorld()->validPos(randX, randY));
+    moveTo(randX, randY);
+}
+
+bool MobileActor::checkFork() {
+    int newX;
+    int newY;
+    int count = 0;
+    for (int i = 0; i < 4; i++) {
+        getPositionInThisDirection(i*90, 16, newX, newY);
+        if (getWorld()->validPos(newX, newY)) //doesn't work at corners
+            count ++;
+    }
+    if (count >= 3)
+        return true;
+    return false;
+}
+
+bool Avatar::keyPressed() {
+    int action = getWorld()->getAction(this->getNumPlayer()); //make sure this line works
+    int newX;
+    int newY;
+    switch (action) {
+        case ACTION_NONE: {
+            return false;
+            break;
+        }
+        case ACTION_UP: { //change direction cases to be more concise
+            getPositionInThisDirection(up, 16, newX, newY);
+            if (getWorld()->validPos(newX, newY) && getWalkDirection() != down) {
+                setWalkDirection(up);
+                spriteDirection();
+                return true;
+            }
+            return false;
+        }
+        case ACTION_DOWN: {
+            getPositionInThisDirection(down, 16, newX, newY);
+            if (getWorld()->validPos(newX, newY) && getWalkDirection() != up) {
+                setWalkDirection(down);
+                spriteDirection();
+                return true;
+            }
+            return false;
+        }
+        case ACTION_RIGHT: {    
+            getPositionInThisDirection(right, 16, newX, newY);
+            if (getWorld()->validPos(newX, newY) && getWalkDirection() != left) {
+                setWalkDirection(right);
+                spriteDirection();
+                return true;
+            }
+            return false;
+        }
+        case ACTION_LEFT: {
+            getPositionInThisDirection(left, 16, newX, newY);
+            if (getWorld()->validPos(newX, newY) && getWalkDirection() != right) {
+                setWalkDirection(left);
+                spriteDirection();
+                return true;
+            }
+            return false;
+        }
+        default:
+            return false;
+    }
+}
+
+void Baddie::setPauseCounter() {
+    pauseCounter = 180;
+}
+
+void Baddie::whenHit() {
+    teleport();
+    setWalkDirection(right);
+    spriteDirection();
+    setState(true);
+    setPauseCounter();
+}
+
+void Bowser::dropping() {
+    int chance = randInt(1, 4);
+    if (chance == 3) {
+        //getWorld()->replace(getX(), getY());
+        getWorld()->playSound(SOUND_DROPPING_SQUARE_CREATED);
+    }
+}
+
+void Vortex::doSomething() {
+    if (!isAlive())
+        return;
+    moveAtAngle(getDirection(), 2); //figure out direction
+    
+    if (getX() < 0 || getX() >= VIEW_WIDTH || getY() < 0 || getY() >= VIEW_HEIGHT)
+        kill();
+    
+    if (getWorld()->overlap(getX(), getY())) {
+        kill();
+        getWorld()->playSound(SOUND_HIT_BY_VORTEX);
+    }
+}
+
+void Avatar::giveVortex() {
+    hasVortex = true;
 }

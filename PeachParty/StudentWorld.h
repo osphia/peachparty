@@ -24,6 +24,11 @@ public:
     int getBankBalance() {return bankBalance;}
     void changeBankBalance(int num) {bankBalance += num;}
     void clearBankBalance() {bankBalance = 0;}
+    void replace(int x, int y);
+    bool yoshiWon();
+    double distance(int x1, int x2, int y1, int y2);
+    bool overlap(int x, int y);
+    void spawnVortex(int x, int y, int dir);
 
 private:
     int m_lives;
