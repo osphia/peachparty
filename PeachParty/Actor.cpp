@@ -459,16 +459,16 @@ void EventSquare::swapPlayers() {
     
     int tempPlayer = getWorld()->getPlayer(1)->getTicksToMove();
     getWorld()->getPlayer(1)->setTicksToMove(getWorld()->getPlayer(2)->getTicksToMove());
-    getWorld()->getPlayer(1)->setTicksToMove(tempPlayer);
+    getWorld()->getPlayer(2)->setTicksToMove(tempPlayer);
     
     int tempDir = getWorld()->getPlayer(1)->getWalkDirection();
     getWorld()->getPlayer(1)->setWalkDirection(getWorld()->getPlayer(2)->getWalkDirection());
-    getWorld()->getPlayer(1)->setWalkDirection(tempDir); //works
+    getWorld()->getPlayer(2)->setWalkDirection(tempDir); //works
     
     getWorld()->getPlayer(1)->spriteDirection();
     getWorld()->getPlayer(2)->spriteDirection();
     
     bool tempState = getWorld()->getPlayer(1)->getState();
     getWorld()->getPlayer(1)->setState(getWorld()->getPlayer(2)->getState());
-    getWorld()->getPlayer(1)->setState(tempState);
+    getWorld()->getPlayer(2)->setState(tempState);
 }
